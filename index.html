@@ -3,17 +3,17 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Listening Timeline (demo)</title>
+<title>Listening Timeline (prototype)</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;700&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Quicksand:wght@500;700&display=swap" rel="stylesheet">
 <style>
 :root{
   --bg:#EDF0F4; --panel:#FFFFFF; --ink:#16203A; --muted:#566079; --line:#D3D9E3; --soft:#F4F6F9;
   --calm:#4E9FCB; --upbeat:#EFA423; --intense:#D6455D; --wistful:#8A74CC; --focused:#37977F; --restless:#C2509F;
   --ctx-device:#E3E9F2; --ctx-place:#DDE8E4; --pl0:#BFD0F0; --pl1:#F0CDB8; --pl2:#C6E3CC; --pl3:#E3D3EE; --pl4:#F0E2A8; --pl5:#B8E0E6;
-  --display:'Quasimoda', 'Montserrat', 'Avenir Next', 'Segoe UI', system-ui, sans-serif;
-  --body:'Instrument Sans', 'Segoe UI', system-ui, -apple-system, sans-serif;
+  --display:'Quicksand', 'Clarity City', 'Plus Jakarta Sans', system-ui, sans-serif;
+  --body:'Clarity City', 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
   box-sizing:border-box;
   padding-top:env(safe-area-inset-top,0px);
   padding-bottom:env(safe-area-inset-bottom,0px);
@@ -283,7 +283,6 @@ button.btn{border:0;cursor:pointer;font:inherit;font-weight:600}
 .lg[aria-pressed="true"]{border-color:var(--ink);box-shadow:inset 0 0 0 1px var(--ink)}
 
 /* timeline card */
-.card{background:var(--panel);border:1px solid var(--line);border-radius:16px;overflow:hidden}
 .tools{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid var(--line);font-size:14px;color:var(--muted)}
 .zoom{display:flex;align-items:center;gap:6px}
 .zoom button{width:32px;height:32px;border-radius:8px;border:1px solid var(--line);background:var(--soft);font-size:18px;line-height:1}
@@ -323,9 +322,6 @@ button.btn{border:0;cursor:pointer;font:inherit;font-weight:600}
 
 .sm{position:absolute;top:50%;width:26px;height:26px;border-radius:50%;border:1.5px solid var(--ink);background:var(--panel);display:grid;place-items:center;transform:translate(-50%,-50%);padding:0;z-index:2}
 .sm.sel{background:var(--ink);color:var(--panel)}
-.seg{position:absolute;top:4px;bottom:4px;border-radius:8px;padding:0 10px;display:flex;align-items:center;font-size:12.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.seg.device{background:var(--ctx-device)}
-.seg.place{background:var(--ctx-place)}
 .note{font-size:13px;color:var(--muted);padding:10px 14px;border-top:1px solid var(--line);margin:0}
 
 /* detail */
@@ -384,22 +380,444 @@ button.btn{border:0;cursor:pointer;font:inherit;font-weight:600}
   .detail{padding:15px 18px;gap:14px}
 }
 @media (prefers-reduced-motion: reduce){*{transition:none!important}}
+.js .rv{opacity:0;transform:translateY(22px);transition:opacity .7s ease,transform .7s cubic-bezier(.2,.7,.2,1)}
+.js .rv.in{opacity:1;transform:none}
+@media (prefers-reduced-motion: reduce){.js .rv{opacity:1;transform:none}}
+
+/* ===== editorial pass: neutral palette, one accent, flat chips, rules instead of boxes ===== */
+:root{
+  --bg:#FFFFFF; --panel:#FFFFFF; --ink:#18181B; --muted:#71717A; --line:#E4E4E7; --line2:#D4D4D8; --soft:#F4F4F5; --bar:#FAFAFA; --chip:#E4E4E7;
+  --accent:#1F5FD9; --accent-h:#174BB0; --accent-ink:#FFFFFF;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){--bg:#18181B;--panel:#18181B;--ink:#F4F4F5;--muted:#A1A1AA;--line:#3F3F46;--line2:#52525B;--soft:#27272A;--bar:#1F1F23;--chip:#3F3F46;--accent:#6B9BFF;--accent-h:#8DB1FF;--accent-ink:#0B1220}
+}
+:root[data-theme="dark"]{--bg:#18181B;--panel:#18181B;--ink:#F4F4F5;--muted:#A1A1AA;--line:#3F3F46;--line2:#52525B;--soft:#27272A;--bar:#1F1F23;--chip:#3F3F46;--accent:#6B9BFF;--accent-h:#8DB1FF;--accent-ink:#0B1220}
+body{font-size:15px;line-height:1.55;letter-spacing:0}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+h1,h2,h3,h4{letter-spacing:0}
+h1{font-size:clamp(26px,3.6vw,38px);line-height:1.15}
+.demo h2,.genres h2,.export h2{font-size:clamp(20px,2.4vw,26px);line-height:1.2;margin:0 0 6px}
+.pv h1{font-size:clamp(26px,3.6vw,36px);letter-spacing:0}
+.pv h2{font-size:18px;letter-spacing:0;border-bottom:2px solid var(--line2);padding-bottom:8px}
+.rtitle b,.dn-detail b,.quad-detail b,.oracle h2,.detail h3,.pc h3,.g-notes h3,.q-title{letter-spacing:0}
+.oracle h2{font-size:20px}
+.detail h3{font-size:20px}
+.lead{font-size:15.5px}
+
+/* header: utility bar, then main bar */
+.utility{background:var(--soft);font-size:13px}
+.utility .in{max-width:1180px;margin:0 auto;padding:8px 20px;display:flex;justify-content:space-between;gap:6px 16px;flex-wrap:wrap}
+.utility .u-note{color:var(--muted)}
+.utility nav{display:flex;gap:16px;flex-wrap:wrap}
+.utility a{color:var(--muted);text-decoration:none}
+.utility a:hover{color:var(--accent)}
+.mainbar{position:sticky;top:0;z-index:60;background:var(--bar);box-shadow:0 1px 0 var(--line);transition:box-shadow .25s}
+.mainbar.stuck{box-shadow:0 10px 22px -12px rgba(0,0,0,.4)}
+.mainbar .in{max-width:1180px;margin:0 auto;padding:0 20px;display:flex;align-items:center;gap:20px;min-height:60px;position:relative}
+.logo{display:flex;align-items:center;text-decoration:none}
+.logo-orb{width:30px;height:30px;border-radius:50%;background:radial-gradient(circle at 30% 26%,#fff 0 7%,transparent 22%),conic-gradient(from 30deg,var(--calm),var(--upbeat),var(--intense),var(--wistful),var(--calm));box-shadow:inset 0 -4px 8px rgba(0,0,0,.25)}
+.mainnav{display:flex;gap:4px;margin-left:auto}
+.mainnav a{padding:20px 14px 18px;font-size:12.5px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);text-decoration:none;border-bottom:2px solid transparent}
+.mainnav a:hover{color:var(--ink)}
+.mainnav a[aria-current="page"]{color:var(--ink);border-bottom-color:var(--accent)}
+.mainctl{display:flex;align-items:center;gap:10px}
+.cta{margin:0;padding:9px 16px;font-size:13px}
+.hamb{display:none;place-items:center;width:40px;height:40px;border:0;background:none;color:var(--ink);padding:0;border-radius:4px}
+.hamb svg{width:24px;height:24px}
+.hamb .ic-x{display:none}
+.hamb[aria-expanded="true"] .ic-bars{display:none}
+.hamb[aria-expanded="true"] .ic-x{display:block}
+.mobilenav{display:none}
+@media (max-width:639px){
+  .mainnav,.mainctl .cta{display:none}
+  .mainctl{margin-left:auto}
+  .hamb{display:grid}
+  .mobilenav.open{display:flex;flex-direction:column;position:absolute;top:100%;left:0;right:0;background:var(--bar);padding:6px 20px 18px;box-shadow:0 14px 24px -12px rgba(0,0,0,.4)}
+  .mobilenav a{padding:13px 0;border-bottom:1px solid var(--line);font-size:12.5px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--ink);text-decoration:none}
+  .mobilenav .btn{margin-top:14px;text-align:center}
+  .utility nav{display:none}
+}
+.site{background:var(--panel);border-bottom:2px solid var(--line2)}
+.site .site-in{padding:34px 20px 24px}
+
+/* rules instead of boxes */
+.hero,.card,.pc,.detail,.g-notes,.side{background:transparent;border:0;border-radius:0;box-shadow:none}
+.hero{padding:6px 0 26px;border-bottom:1px solid var(--line)}
+.pc{padding:0}
+.quad{padding:0}
+.g-notes{padding:0}
+.detail{padding:24px 0 0;border-top:1px solid var(--line);margin-top:20px}
+.d-cover{border-radius:8px}
+.tools{border-bottom:0;padding:8px 0}
+.note{border-top:0;padding:10px 0 0}
+.lane.plot{background-color:var(--soft)}
+.rhead{border-bottom:2px solid var(--line2);padding:0 0 12px;margin-bottom:6px}
+.g-head{border-bottom:2px solid var(--line2);padding-bottom:12px;margin-bottom:22px}
+.export h2{border-bottom:2px solid var(--line2);padding-bottom:10px;margin-bottom:16px}
+.heatwrap{padding-right:0}
+#geo{border-radius:8px}
+.hc{border-radius:3px}
+.range input{border:1px solid var(--line2);border-radius:4px;background:transparent}
+
+/* flat chips: grey, accent on hover and when active */
+.seg button,.lg,.back,.step,.zoom button,.pl-acts button,.tm-acts button,.alink{border:0;background:var(--chip);color:var(--ink);border-radius:4px;transition:background .2s,color .2s}
+.seg button,.back,.zoom button,.pl-acts button,.tm-acts button{padding:6px 12px;font-size:13px;font-weight:500}
+.lg{padding:5px 10px 5px 8px;font-size:13px}
+.lg i{border-radius:2px}
+.alink{padding:3px 10px 3px 3px;font-size:13px}
+.step{border-radius:4px}
+.seg button:hover,.lg:hover,.back:hover,.step:hover,.zoom button:hover,.pl-acts button:hover,.tm-acts button:hover,.alink:hover{background:var(--accent);color:var(--accent-ink);border:0}
+.seg button[aria-pressed="true"],.lg[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);box-shadow:none;border:0}
+.lg:hover small,.lg[aria-pressed="true"] small{color:inherit;opacity:.85}
+.pchip .pic,.chip .pic{color:var(--muted)}
+.btn{background:var(--accent);color:var(--accent-ink);border-radius:4px;font-weight:600;font-size:14px;padding:9px 16px}
+.btn:hover{background:var(--accent-h)}
+.steps li::before{background:var(--accent);color:var(--accent-ink);border-radius:4px}
+
+.rk.skip .bar i{background:var(--accent)}
+.rk .bar{border-radius:2px}
+.rk .bar i{border-radius:2px}
+
+/* playlist as covers */
+.tp{margin:0;padding:0;max-height:0;opacity:0;transform:translateY(-12px);overflow:hidden;pointer-events:none;transition:max-height .45s ease-in-out,opacity .4s ease-in-out,transform .4s ease-in-out,margin .4s}
+.tp.is-open{max-height:6000px;opacity:1;transform:none;pointer-events:auto;margin:0 0 28px}
+@media (prefers-reduced-motion: reduce){.tp{transition:none}}
+.pl-top{margin-top:4px}
+.pl-top h3{font-size:20px}
+.badge-new{position:absolute;top:8px;right:8px;z-index:2;background:var(--accent);color:var(--accent-ink);font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;padding:2px 8px;border-radius:2px}
+.skel{background:var(--chip);border-radius:6px;animation:pulse 1.4s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.45}}
+.skel-line{height:14px;margin:0 0 10px}
+@media (prefers-reduced-motion: reduce){.skel{animation:none}}
+
+/* song details */
+.tmodal{position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;padding:16px}
+.tm-back{position:absolute;inset:0;background:rgba(0,0,0,.5)}
+.tm-box{position:relative;background:var(--panel);color:var(--ink);border-radius:8px;max-width:760px;width:100%;max-height:90vh;overflow:auto;padding:26px;box-shadow:0 24px 60px rgba(0,0,0,.4)}
+.tm-x{position:absolute;top:8px;right:12px;border:0;background:none;font-size:26px;line-height:1;color:var(--muted);padding:4px 8px}
+.tm-grid{display:grid;grid-template-columns:230px minmax(0,1fr);gap:26px}
+.tm-cov{position:relative;aspect-ratio:1/1;border-radius:8px;box-shadow:0 10px 24px -10px rgba(0,0,0,.5)}
+.tm-info h3{margin:0 0 4px;font-size:22px;line-height:1.2}
+.tm-alb{margin:0 0 12px;color:var(--muted);font-size:14px}
+.tm-artist{margin-bottom:12px}
+.tm-why{margin:0 0 14px;font-size:14.5px}
+.tm-acts{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:18px}
+.tm-acts .btn{margin:0;text-decoration:none}
+@media (max-width:640px){.tm-grid{grid-template-columns:1fr}.tm-cov{max-width:240px}}
+
+/* rounded buttons */
+.seg button,.lg,.back,.step,.zoom button,.pl-acts button,.tm-acts button,.alink,.btn,.cta{border-radius:999px}
+.seg button,.back,.zoom button,.pl-acts button,.tm-acts button{padding:6px 14px}
+.lg{padding:5px 12px 5px 8px}
+.lg i{border-radius:50%}
+.btn{padding:9px 20px}
+.alink{padding:3px 12px 3px 3px}
+.step{border-radius:50%}
+.steps li::before{border-radius:50%}
+.hamb{border-radius:50%}
+.range input{border-radius:999px;padding:6px 14px}
+
+/* footer */
+.sitefoot{background:#000;color:#fff;margin-top:72px}
+.sitefoot .in{max-width:1180px;margin:0 auto;padding:56px 20px 40px}
+.fcols{display:flex;flex-wrap:wrap;gap:32px 72px}
+.fcols h3{color:#6B9BFF;text-transform:uppercase;font-size:13px;letter-spacing:.1em;margin:0 0 10px;font-weight:600}
+.fcols a{display:block;color:#fff;padding:6px 0;text-decoration:none;font-size:14.5px}
+.fcols a:hover{color:#6B9BFF}
+.sitefoot .copy{color:#A1A1AA;font-size:13px;margin:40px 0 0}
+
+/* ===== palette: blush page, hot pink accent, lavender and periwinkle, from the reference screens ===== */
+:root{
+  --bg:#FFFFFF; --panel:#FFFFFF; --bar:#FFFFFF; --util:#F1E3F5; --ink:#2A2433; --muted:#6F6879;
+  --line:#EBDDE8; --line2:#DCC8D8; --soft:#F4E9F3; --chip:#EFE2EE;
+  --accent:#DB2F7F; --accent-h:#BF2170; --accent-d:#B3226F; --accent-ink:#FFFFFF; --lav:#EBD3FA; --chipline:#F2B9D5;
+  --calm:#7FA2F5; --upbeat:#FFA06B; --intense:#EF4C86; --wistful:#B98AE8; --focused:#67C9A5; --restless:#F3C65A;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#1B1626; --panel:#241D33; --bar:#211B2E; --util:#2B2340; --ink:#F5EEF8; --muted:#B3A9C2;
+    --line:#3A3050; --line2:#4B3F66; --soft:#2B2340; --chip:#352B4B;
+    --accent:#FF6FB0; --accent-h:#FF8FC2; --accent-d:#FFC2DD; --accent-ink:#2A0F1F; --lav:#4A2F66; --chipline:#5B3F70;
+    --calm:#8FB0FF; --upbeat:#FFB085; --intense:#FF6FA0; --wistful:#C9A0F2; --focused:#7DDBB8; --restless:#F7D277;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#1B1626; --panel:#241D33; --bar:#211B2E; --util:#2B2340; --ink:#F5EEF8; --muted:#B3A9C2;
+  --line:#3A3050; --line2:#4B3F66; --soft:#2B2340; --chip:#352B4B;
+  --accent:#FF6FB0; --accent-h:#FF8FC2; --accent-d:#FFC2DD; --accent-ink:#2A0F1F; --lav:#4A2F66; --chipline:#5B3F70;
+  --calm:#8FB0FF; --upbeat:#FFB085; --intense:#FF6FA0; --wistful:#C9A0F2; --focused:#7DDBB8; --restless:#F7D277;
+}
+.utility{background:var(--util)}
+.mainbar{box-shadow:0 6px 18px -14px rgba(120,60,110,.45)}
+.mainbar.stuck{box-shadow:0 12px 26px -14px rgba(120,60,110,.5)}
+.site{border-bottom:0;background:
+  radial-gradient(60% 140% at 12% 100%,rgba(255,140,185,.8) 0%,transparent 62%),
+  radial-gradient(55% 140% at 88% 105%,rgba(195,140,240,.8) 0%,transparent 62%),
+  radial-gradient(40% 110% at 52% 110%,rgba(255,165,135,.75) 0%,transparent 60%),
+  linear-gradient(to bottom,#FFFFFF 0%,#FFFFFF 100%)}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]) .site{background:
+    radial-gradient(60% 140% at 12% 125%,rgba(255,111,176,.45) 0%,transparent 62%),
+    radial-gradient(55% 140% at 88% 130%,rgba(160,110,230,.5) 0%,transparent 62%),
+    radial-gradient(40% 110% at 52% 135%,rgba(255,150,120,.35) 0%,transparent 60%),#241D33}
+}
+:root[data-theme="dark"] .site{background:
+  radial-gradient(60% 140% at 12% 125%,rgba(255,111,176,.45) 0%,transparent 62%),
+  radial-gradient(55% 140% at 88% 130%,rgba(160,110,230,.5) 0%,transparent 62%),
+  radial-gradient(40% 110% at 52% 135%,rgba(255,150,120,.35) 0%,transparent 60%),#241D33}
+.site .site-in{padding:40px 20px 34px}
+/* chips: outlined pink pills, lavender when active */
+.seg button,.lg,.back,.step,.zoom button,.pl-acts button,.tm-acts button{background:var(--panel);color:var(--accent-d);border:1px solid var(--chipline)}
+.alink{background:var(--panel);color:var(--ink);border:1px solid var(--chipline)}
+.lg{color:var(--ink)}
+.seg button:hover,.lg:hover,.back:hover,.step:hover,.zoom button:hover,.pl-acts button:hover,.tm-acts button:hover,.alink:hover{background:var(--accent);color:var(--accent-ink);border:1px solid var(--accent)}
+.seg button[aria-pressed="true"],.lg[aria-pressed="true"]{background:var(--lav);color:var(--accent-d);border:1px solid var(--lav)}
+.range input{border:1px solid var(--chipline);background:var(--panel)}
+.rk .bar{background:var(--line)}
+.hero{border-bottom-color:var(--line)}
+.sitefoot{background:#2A1F3D}
+.fcols h3{color:#FF8FC0}
+.fcols a:hover{color:#FF8FC0}
+.sitefoot .copy{color:#B3A9C2}
+.site .lede{color:var(--ink);font-weight:500}
+#view-locations #placeWeek{margin-bottom:28px}
+:root{--mapbg:#EAF3FD;--mapland:#4F73A3}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--mapbg:#1D2940;--mapland:#8FB0DA}}
+:root[data-theme="dark"]{--mapbg:#1D2940;--mapland:#8FB0DA}
+#geo{background:var(--mapbg)}
+#geo .land{stroke:var(--mapland);stroke-opacity:.85}
+#geo .arc{stroke:var(--mapland);stroke-opacity:.75}
+#geo text{stroke:var(--mapbg)}
+
+/* dropdown filter */
+.sel{display:inline-block}
+.sel select{appearance:none;-webkit-appearance:none;border:1px solid var(--chipline);border-radius:999px;background:var(--panel) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%23DB2F7F' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 14px center;color:var(--accent-d);font:inherit;font-size:13px;font-weight:500;padding:6px 36px 6px 14px;cursor:pointer;transition:border-color .2s}
+.sel select:hover{border-color:var(--accent)}
+.sel select option{color:#2A2433;background:#FFFFFF}
+/* titles: bold Quicksand */
+h1,h2,h3,h4,.rtitle b,.q-title,.tc-h,.quad-detail b,.dn-detail b,.dn-pct,.tm-info h3{font-family:var(--display);font-weight:700}
+
+/* genre breakdown */
+.g-break{margin-top:44px}
+.g-break h3{font-size:20px;border-bottom:2px solid var(--line2);padding-bottom:10px;margin:0 0 10px}
+.g-break .sub{margin:0 0 14px;color:var(--muted);font-size:14px;max-width:70ch}
+.sim-tag{display:inline-block;vertical-align:middle;margin-left:8px;background:var(--lav);color:var(--accent-d);font-family:var(--body);font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:3px 10px;border-radius:999px}
+.bk-list{list-style:none;margin:0 0 22px;padding:0;display:grid;gap:10px}
+.bk-list li{font-size:15px;max-width:80ch}
+.bk-list b,.g-notes b,.dn-detail b{font-weight:700}
+.bt-wrap{overflow-x:auto}
+.bt{width:100%;border-collapse:collapse;font-size:14px}
+.bt th{text-align:left;font-weight:600;color:var(--muted);font-size:12.5px;padding:8px 12px 8px 0;border-bottom:1px solid var(--line2);white-space:nowrap}
+.bt td{padding:10px 12px 10px 0;border-bottom:1px solid var(--line);vertical-align:middle;white-space:nowrap}
+.bt .chip{margin:0;font-size:14px}
+.bt .num b{font-weight:700}
+.hrbar{display:inline-block;height:6px;border-radius:3px;background:var(--accent);vertical-align:middle;margin-left:10px;opacity:.85}
+.oracle h2{font-size:clamp(24px,2.4vw,28px);line-height:1.15;margin:0 0 6px}
+
+/* tracklist */
+.skel-trow{height:52px;margin:0 0 8px}
+.tl-head,.trow{display:grid;grid-template-columns:36px minmax(0,2.2fr) minmax(0,1.3fr) 104px 52px;gap:0 14px;align-items:center}
+.tl-head{margin-top:16px;padding:8px 12px;border-bottom:1px solid var(--line2);font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.tl-head .td,.trow .td{text-align:right}
+.tracks{list-style:none;margin:6px 0 0;padding:0}
+.trow{width:100%;border:0;background:none;color:var(--ink);text-align:left;padding:8px 12px;border-radius:10px;cursor:pointer;transition:background .15s}
+.trow:hover,.trow:focus-visible{background:var(--soft)}
+.trow .tn{color:var(--muted);font-size:14px;text-align:right}
+.tt{display:flex;align-items:center;gap:12px;min-width:0}
+.tcov{flex:none;width:44px;height:44px;border-radius:6px}
+.tmeta{display:flex;flex-direction:column;min-width:0}
+.tmeta b{font-size:14.5px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tmeta i{font-style:normal;font-size:13px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.trow .ta{font-size:13.5px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.trow .td{font-size:13.5px;color:var(--muted)}
+.tg{justify-self:start;font-size:12px;font-weight:600;padding:3px 10px;border-radius:999px;white-space:nowrap}
+.tg.new{background:var(--accent);color:var(--accent-ink)}
+.tg.fam{background:var(--lav);color:var(--accent-d)}
+@media (max-width:640px){
+  .tl-head,.trow{grid-template-columns:24px minmax(0,1fr) 44px;gap:0 10px}
+  .tl-head .ta,.trow .ta,.tl-head span:nth-child(4){display:none}
+  .trow{grid-template-areas:"n t d" ". g ."}
+  .trow .tn{grid-area:n}.trow .tt{grid-area:t}.trow .td{grid-area:d}.trow .tg{grid-area:g;margin:2px 0 0 52px}
+  .tcov{width:40px;height:40px}
+}
+:root{--mapbg:#F3F8FE;--mapland:#1F3358}
+#geo .land{stroke-opacity:1}
+#geo .arc{stroke-opacity:.8}
+.btn.fc-play{display:inline-flex;align-items:center;gap:12px;padding:10px 22px 10px 18px}
+.btn.fc-play svg{width:12px;height:12px;flex:none}
+/* buttons: bold uppercase Quicksand */
+button:not(.trow):not(.hc):not(.dot):not(.day):not(.tm-x):not(.hamb),.btn,.alink,.sel select{font-family:var(--display);font-weight:700;text-transform:uppercase;letter-spacing:.06em}
+.seg button,.back,.pl-acts button,.tm-acts button,.lg,.alink,.sel select{font-size:11.5px}
+.btn,.cta{font-size:12.5px}
+.lg small{font-weight:700}
+.lg[data-def]::after{text-transform:none;letter-spacing:0;font-family:var(--body);font-weight:400}
+
+/* music horoscope */
+.horo{margin-top:56px}
+.signs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px;margin:6px 0 30px}
+.sign{border-top:3px solid var(--accent);padding-top:12px}
+.sign small{display:block;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.sign b{display:block;font-family:var(--display);font-weight:700;font-size:20px;line-height:1.2;margin:4px 0 2px}
+.sign span{font-size:13.5px;color:var(--muted)}
+.horo-main{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:20px 48px;align-items:start}
+.horo-eyebrow{margin:0 0 4px;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--accent-d)}
+.horo-read h3{font-size:clamp(26px,3vw,34px);line-height:1.15;margin:0 0 6px}
+.horo-tag{margin:0 0 14px;font-size:17px;color:var(--muted)}
+.horo-read p{max-width:62ch}
+.horo-era{margin-top:16px}
+.horo-meta{margin:0;display:grid;gap:16px;border-left:1px solid var(--line2);padding-left:28px}
+.horo-meta dt{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.horo-meta dd{margin:2px 0 0;font-size:15px}
+.horo-meta dd b{font-size:20px}
+.horo-h4{margin:34px 0 10px;font-size:15px}
+.horo-bars{list-style:none;margin:0;padding:0;display:grid;gap:8px;max-width:640px}
+.horo-bars li{display:grid;grid-template-columns:minmax(0,230px) minmax(0,1fr) 44px;gap:12px;align-items:center;font-size:14px}
+.horo-bars b{text-align:right}
+.hbar{display:block;height:8px;border-radius:4px;background:var(--line)}
+.hbar u{display:block;height:100%;border-radius:4px;background:var(--accent);text-decoration:none}
+.horo-note{margin:26px 0 0;font-size:13px;color:var(--muted);max-width:70ch}
+.horo-note a{color:var(--accent-d)}
+@media (max-width:860px){.horo-main{grid-template-columns:1fr}.horo-meta{border-left:0;padding-left:0;border-top:1px solid var(--line2);padding-top:18px}.signs{grid-template-columns:1fr;gap:16px}}
+@media (max-width:560px){.horo-bars li{grid-template-columns:minmax(0,1fr) 44px}.horo-bars .hbar{display:none}}
+.btn.cta,.mobilenav .btn[data-cta]{display:inline-flex;align-items:center;justify-content:center;gap:12px;padding:10px 22px 10px 18px}
+.btn.cta svg,.mobilenav .btn[data-cta] svg{width:12px;height:12px;flex:none}
+
+/* skips carousel */
+.sk-car{display:flex;align-items:center;gap:10px}
+.sk-track{flex:1;min-width:0;display:flex;align-items:center;gap:18px;padding:14px 0}
+.sk-card{flex:1 1 0;min-width:0;background:var(--soft);border-radius:18px;padding:20px 22px 8px;opacity:.55;transform:scale(.88);transition:flex-grow .4s ease,opacity .4s ease,transform .4s ease;cursor:pointer;max-height:320px;overflow:hidden}
+.sk-card.is-c{flex-grow:1.9;opacity:1;transform:none;cursor:default;max-height:none;padding-bottom:12px;box-shadow:0 14px 30px -18px rgba(120,60,110,.45)}
+.sk-card:not(.is-c) .rk.skip:nth-of-type(n+3){display:none}
+.sk-card:not(.is-c):hover{opacity:.8}
+.sk-card h3{margin:0 0 4px;font-size:20px}
+.sk-card.is-c h3{font-size:24px}
+.sk-card .sub{margin:0 0 14px;color:var(--muted);font-size:13.5px}
+.sk-card .rk{margin-bottom:12px}
+.sk-card .rk b{font-size:14.5px}
+.sk-card .rk .bar{background:var(--line2)}
+.sk-prev,.sk-next{flex:none;width:36px;height:44px;border:0;border-radius:999px;background:var(--panel);color:var(--ink);font-size:22px;line-height:1;padding:0;box-shadow:0 4px 14px rgba(0,0,0,.2);transition:transform .3s}
+.sk-prev:hover{transform:translateX(-3px)}.sk-next:hover{transform:translateX(3px)}
+@media (max-width:860px){
+  .sk-card:not(.is-c){display:none}
+  .sk-card.is-c{flex-grow:1}
+}
+@media (max-width:639px){.mainctl .btn.cta{display:none}}
+
+/* twin cities */
+.twin-panel{margin-top:24px;border-top:1px solid var(--line2);padding-top:22px}
+.tw-hint{margin:0;color:var(--muted);font-size:14px}
+.tw-eyebrow{margin:0 0 4px;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--accent-d)}
+.tw-why{margin:0;font-size:16px;max-width:72ch}
+.tw-grid{display:grid;grid-template-columns:minmax(0,1fr) 40px minmax(0,1fr);gap:0 20px;margin-top:20px;align-items:stretch}
+.tw-col{background:var(--soft);border-radius:18px;padding:22px 24px}
+.tw-col h4{margin:0 0 4px;font-size:24px;line-height:1.15}
+.tw-col h4 small{display:block;font-family:var(--body);font-weight:400;font-size:13px;color:var(--muted);margin-top:2px}
+.tw-listen{margin:6px 0 0;font-size:14px;color:var(--muted)}
+.tw-col h5{margin:18px 0 4px;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--accent-d)}
+.tw-col p:not(.tw-listen){margin:0;font-size:14.5px}
+.tw-mid{align-self:center;display:grid;place-items:center;color:var(--accent)}
+.tw-note{margin:16px 0 0;font-size:13px;color:var(--muted);max-width:72ch}
+#geo .bub.twin circle{stroke:var(--accent);stroke-width:3.4}
+@media (max-width:860px){.tw-grid{grid-template-columns:1fr;gap:12px}.tw-mid{display:none}}
+/* horoscope reading: make it the star of the section */
+.horo-main{padding:36px 40px;border-radius:26px;gap:26px 56px;box-shadow:0 26px 54px -30px rgba(160,60,130,.55);background:
+  radial-gradient(60% 120% at 0% 0%,rgba(255,150,190,.42),transparent 62%),
+  radial-gradient(60% 120% at 100% 100%,rgba(195,140,240,.45),transparent 62%),
+  radial-gradient(40% 90% at 62% 112%,rgba(255,170,140,.38),transparent 62%),#FFFFFF}
+.horo-eyebrow{display:inline-block;background:var(--panel);color:var(--accent-d);padding:5px 14px;border-radius:999px;font-size:11.5px;margin:0 0 14px;box-shadow:0 2px 8px -4px rgba(160,60,130,.5)}
+.horo-read h3{font-size:clamp(28px,3vw,34px);line-height:1.12;margin:0 0 8px}
+.horo-tag{font-size:19px;font-weight:500;color:var(--ink);margin:0 0 18px}
+.horo-read p{font-size:17px;line-height:1.6}
+.horo-era{background:rgba(255,255,255,.72);border-radius:16px;padding:16px 18px;margin-top:20px;font-size:15.5px}
+.horo-meta{border-left:1px solid rgba(160,60,130,.28);padding-left:34px;gap:20px}
+.horo-meta dt{color:var(--accent-d)}
+.horo-meta dd b{font-size:26px;color:var(--accent-d)}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]) .horo-main{background:
+    radial-gradient(60% 120% at 0% 0%,rgba(255,111,176,.30),transparent 62%),
+    radial-gradient(60% 120% at 100% 100%,rgba(160,110,230,.34),transparent 62%),
+    radial-gradient(40% 90% at 62% 112%,rgba(255,150,120,.26),transparent 62%),#241D33;box-shadow:0 26px 54px -30px rgba(0,0,0,.7)}
+  :root:not([data-theme="light"]) .horo-era{background:rgba(0,0,0,.28)}
+}
+:root[data-theme="dark"] .horo-main{background:
+  radial-gradient(60% 120% at 0% 0%,rgba(255,111,176,.30),transparent 62%),
+  radial-gradient(60% 120% at 100% 100%,rgba(160,110,230,.34),transparent 62%),
+  radial-gradient(40% 90% at 62% 112%,rgba(255,150,120,.26),transparent 62%),#241D33}
+:root[data-theme="dark"] .horo-era{background:rgba(0,0,0,.28)}
+@media (max-width:860px){.horo-main{padding:26px 24px}.horo-meta{border-left:0;padding-left:0;border-top:1px solid rgba(160,60,130,.28);padding-top:20px}}
+.horo-read .horo-eyebrow{font-size:11.5px;line-height:1.4}
+
+/* icons */
+.ic{width:1em;height:1em;flex:none;vertical-align:-.14em;margin-right:.45em;color:var(--accent)}
+h2 .ic,h3 .ic{width:.82em;height:.82em;vertical-align:-.08em}
+h4 .ic{width:.95em;height:.95em}
+.horo-read h3 .ic{width:.85em;height:.85em;margin-right:.35em}
+.sign small .ic,.horo-meta dt .ic,.tw-col h5 .ic,.horo-eyebrow .ic{width:14px;height:14px;margin-right:6px;vertical-align:-2px}
+.sign b .ic{width:.9em;height:.9em;vertical-align:-.1em}
+.horo-era b .ic{width:1em;height:1em;vertical-align:-.15em}
+.horo-bars li span .ic{width:15px;height:15px;margin-right:8px;vertical-align:-3px}
+.sk-card h3 .ic{width:.8em;height:.8em}
+.tw-col h4 .ic{width:.75em;height:.75em;vertical-align:-.05em}
+.oracle h2 .ic{width:.8em;height:.8em}
+.horo-bars li{grid-template-columns:minmax(0,290px) minmax(0,1fr) 44px}
+.horo-bars{max-width:700px}
+@media (max-width:560px){.horo-bars li{grid-template-columns:minmax(0,1fr) 44px}}
+
+/* what each title means */
+.sign-def{margin:4px 0 6px;font-size:13.5px;line-height:1.45;color:var(--ink)}
+.horo-read .horo-def{margin:0 0 16px;font-size:15px;color:var(--muted)}
+.horo-def b{color:var(--ink)}
+.horo-bars{gap:14px;max-width:760px}
+.horo-bars li{align-items:start;grid-template-columns:minmax(0,380px) minmax(0,1fr) 44px}
+.horo-bars li span em{display:block;font-style:normal;font-weight:600}
+.horo-bars li span small{display:block;margin:2px 0 0 23px;font-size:12.5px;line-height:1.4;color:var(--muted)}
+.horo-bars li .hbar{margin-top:7px}
+@media (max-width:560px){.horo-bars li{grid-template-columns:minmax(0,1fr) 44px}}
+
+/* twin cities lightbox */
+.twin-panel{margin-top:14px;border-top:0;padding-top:0}
+.twmodal .tm-back{background:rgba(24,12,36,.62);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px)}
+.tw-box{max-width:1040px;padding:30px 32px}
+.tw-box .tw-grid{margin-top:18px}
+@media (max-width:640px){.tw-box{padding:24px 18px}}
 </style>
 </head>
 <body>
-<div class="navbar" id="navbar">
-  <div class="site-in site-top">
-    <nav class="topnav" aria-label="Pages">
+<div class="utility">
+  <div class="in">
+    <span class="u-note">Prototype with simulated data. Not connected to Spotify.</span>
+    <nav aria-label="Utility">
+      <a href="#privacy" data-view="privacy">Privacy and data</a>
+      <a href="#export" data-scroll="export">Export steps</a>
+      <a href="https://www.spotify.com/account/privacy/" target="_blank" rel="noopener noreferrer">Spotify privacy settings</a>
+    </nav>
+  </div>
+</div>
+<div class="mainbar" id="navbar">
+  <div class="in">
+    <a class="logo" href="#home" data-view="home" aria-label="Listening Timeline, home"><span class="logo-orb"></span></a>
+    <nav class="mainnav" aria-label="Pages">
       <a href="#home" data-view="home" aria-current="page">Listening</a>
       <a href="#locations" data-view="locations">Locations</a>
     </nav>
-    <span class="badge">Demo data, not a real account</span>
+    <div class="mainctl">
+      <button class="btn cta" data-cta><svg viewBox="0 0 10 10" aria-hidden="true"><path d="M2 1l7 4-7 4z" fill="currentColor"/></svg>Today's playlist</button>
+      <button class="hamb" id="navBtn" aria-label="Menu" aria-expanded="false" aria-controls="mobileNav"><svg class="ic-bars" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg><svg class="ic-x" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+    </div>
+    <nav class="mobilenav" id="mobileNav" aria-label="Menu">
+      <a href="#home" data-view="home">Listening</a>
+      <a href="#locations" data-view="locations">Locations</a>
+      <a href="#privacy" data-view="privacy">Privacy and data</a>
+      <a href="#export" data-scroll="export">Export steps</a>
+      <button class="btn" data-cta><svg viewBox="0 0 10 10" aria-hidden="true"><path d="M2 1l7 4-7 4z" fill="currentColor"/></svg>Today's playlist</button>
+    </nav>
   </div>
 </div>
 <header class="site">
   <div class="site-in">
     <h1>Listening Timeline</h1>
-    <p class="lede">Each dot is a play. The color behind it is the mood your listening suggests, inferred from genre, time of day, and how you listened.</p>
+    <p class="lede">Each dot is a play. The color behind it is a mood guess this app makes from genre, time of day, and how you listened. The plays are simulated.</p>
   </div>
 </header>
 
@@ -417,7 +835,7 @@ button.btn{border:0;cursor:pointer;font:inherit;font-weight:600}
     </div>
   </section>
 
-  <section class="tp" id="todayPl" aria-label="Today's curated playlist" hidden>
+  <section class="tp" id="todayPl" aria-label="Today's curated playlist" aria-hidden="true">
     <div class="pc" id="plOut" aria-live="polite"></div>
   </section>
 
@@ -445,7 +863,6 @@ button.btn{border:0;cursor:pointer;font:inherit;font-weight:600}
     </div>
     <div class="tl">
       <div class="labels" aria-hidden="true">
-        <div class="l-search">Searches</div>
         <div class="l-plot"><span>More energy</span><span>Less energy</span></div>
         <div class="l-axis"></div>
       </div>
@@ -462,8 +879,8 @@ button.btn{border:0;cursor:pointer;font:inherit;font-weight:600}
   <section class="genres" id="genres">
     <div class="g-head">
       <div>
-        <h2>Your Micro Genres</h2>
-        <p>Each dot is a micro genre, placed where your plays of it actually landed for energy and positivity. Circles are genres where the music you play leans alt, and diamonds lean popular. Bigger shapes were played more. Dashed outlines were not played in this range.</p>
+        <h2 data-ico="shapes">Your Micro Genres</h2>
+        <p>Each dot is a micro genre, placed by this app's own energy and positivity estimates for that genre. Circles are genres that lean alt, and diamonds lean popular, based on invented popularity scores. Bigger shapes were played more. Dashed outlines were not played in this range.</p>
       </div>
       <div class="range" role="group" aria-label="Date range">
         <label>From <input type="date" id="dFrom" value="2025-10-05" min="2025-10-05" max="2026-10-04"></label>
@@ -477,14 +894,34 @@ button.btn{border:0;cursor:pointer;font:inherit;font-weight:600}
       </div>
       <aside class="g-notes" id="gNotes"></aside>
     </div>
+    <div class="g-break" id="gBreak"></div>
   </section>
 
-    <section class="demo">
-      <div class="g-head"><div>
-        <h2>What you skip</h2>
-        <p>The share of plays you skipped, across the past year. Small groups are left out so one skipped song does not top the list.</p>
-      </div></div>
-      <div class="s-grid" id="skips"></div>
+    <section class="horo" id="horoscope" aria-labelledby="horoTitle">
+      <div class="g-head">
+        <div>
+          <h2 id="horoTitle" data-ico="sparkle">Your Music Horoscope</h2>
+          <p>Which 2020s music archetype your listening matches. It reads the same date range as your genres, and it is only for fun.</p>
+        </div>
+        <label class="sel"><select id="horoSel" aria-label="Read a different archetype"></select></label>
+      </div>
+      <div id="horoOut"></div>
+      <p class="horo-note">The archetypes are made up by this prototype and scored with its own rules, using simulated plays. They nod to trends described in Wikipedia's <a href="https://en.wikipedia.org/wiki/2020s_in_music" target="_blank" rel="noopener noreferrer">2020s in music</a> article (CC BY-SA 4.0). This is not a personality test.</p>
+    </section>
+
+    <section class="demo skips" id="skipSec" aria-labelledby="skipTitle">
+      <div class="g-head">
+        <div>
+          <h2 id="skipTitle" data-ico="skip">What You Skip</h2>
+          <p>The share of plays you skipped, one month at a time. Small groups are left out so one skipped song does not top the list. Select a side card, or use the arrows, to bring it to the middle.</p>
+        </div>
+        <label class="sel"><select id="skipMonth" aria-label="Month"></select></label>
+      </div>
+      <div class="sk-car" role="group" aria-roledescription="carousel" aria-label="Most skipped genres, artists, and songs">
+        <button class="sk-prev" id="skPrev" aria-label="Previous card">&lsaquo;</button>
+        <div class="sk-track" id="skips"><div class="skel" style="height:240px;flex:1"></div></div>
+        <button class="sk-next" id="skNext" aria-label="Next card">&rsaquo;</button>
+      </div>
     </section>
 
   </div>
@@ -492,81 +929,159 @@ button.btn{border:0;cursor:pointer;font:inherit;font-weight:600}
   <div id="view-locations" role="region" aria-label="Locations" hidden>
     <section class="demo">
       <div class="g-head"><div>
-        <h2>Where you listen</h2>
-        <p>Cities and countries ranked by your listening time. Place comes from the country code and IP address in the export, and the city is an approximate IP lookup. This shows where you were when you played music, so it describes your own listening, not other listeners.</p>
+        <h2 data-ico="pin">Where you listen</h2>
+        <p>Cities and countries ranked by your listening time. In this prototype the places are invented. In a real version the country would come from the export and the city from an approximate IP lookup. This shows where you were when you played music, so it describes your own listening, not other listeners.</p>
       </div></div>
+      <div class="pc" id="placeWeek"><div class="skel" style="aspect-ratio:2.4/1"></div></div>
       <div class="d-grid">
-        <div class="pc" id="cities"></div>
-        <div class="pc" id="countries"></div>
+        <div class="pc" id="cities"><div class="skel skel-line" style="width:40%"></div><div class="skel skel-line"></div><div class="skel skel-line" style="width:80%"></div></div>
+        <div class="pc" id="countries"><div class="skel skel-line" style="width:40%"></div><div class="skel skel-line"></div><div class="skel skel-line" style="width:80%"></div></div>
       </div>
-      <div class="pc" id="placeWeek"></div>
     </section>
   </div>
 
   <div id="view-privacy" role="region" aria-labelledby="pvTitle" hidden>
     <section class="pv">
       <button class="back pv-back" data-view="home">Back to the app</button>
-      <h1 id="pvTitle">Privacy</h1>
-      <p class="pv-lede">What this demo does with data, what a real version would read from your Spotify export, and where that data should and should not go.</p>
+      <h1 id="pvTitle">Privacy and Data Sources</h1>
+      <p class="pv-lede">What this prototype does, where each number would come from in a real version, and what Spotify does not provide.</p>
 
-      <h2>This Demo</h2>
-      <p>Everything you see is generated. It is not connected to a Spotify account, it reads no files, and it sends nothing about you anywhere. It does not use cookies or browser storage.</p>
+      <h2>This Prototype</h2>
+      <p>Everything you see is generated. It is not connected to Spotify, it cannot read your files yet, and it sends nothing about you anywhere. It does not use cookies or browser storage. The artists, songs, albums, places, and plays are all made up.</p>
 
-      <h2>What a Real Version Would Read</h2>
-      <p>The demo copies the shape of Spotify's extended streaming history. A real version would rely on these fields:</p>
+      <h2>What Spotify's Export Contains</h2>
+      <p>A real version would read Spotify's extended streaming history, which you request from your account's privacy page. Each play is one record. This prototype is modeled on these fields:</p>
       <ul class="pv-fields">
-        <li><code>ts</code> The time a play ended.</li>
+        <li><code>ts</code> The time a play ended, in UTC.</li>
         <li><code>ms_played</code> How long you listened.</li>
-        <li><code>skipped</code> Whether you skipped it.</li>
-        <li><code>platform</code> The kind of device, such as phone or laptop.</li>
+        <li><code>skipped</code> Whether you skipped it. Some records leave this empty.</li>
+        <li><code>platform</code> A text value such as <code>ios</code> or an operating system name. A real version would have to sort these into phone, laptop, and so on, and it cannot tell every kind of device, such as a speaker.</li>
         <li><code>conn_country</code> The country the connection came from.</li>
-        <li><code>ip_addr</code> The IP address of the connection.</li>
+        <li><code>ip_addr</code> The IP address of the connection. Some exports call this <code>ip_addr_decrypted</code>.</li>
         <li><code>master_metadata_track_name</code> The song title.</li>
         <li><code>master_metadata_album_artist_name</code> The artist.</li>
+        <li><code>master_metadata_album_album_name</code> The album.</li>
+        <li><code>spotify_track_uri</code> An ID that identifies the track.</li>
       </ul>
-      <p>Spotify has renamed fields before. Open one file and check the names before wiring anything up.</p>
+      <p>Some records have no track name, for example some podcast or video plays. Spotify has changed the format before, so open one file and check the field names before building on it.</p>
 
-      <h2>Where Your Files Should Stay</h2>
-      <p>Your export contains years of listening, with timestamps and an IP address. When this becomes a real app, the files should be read in your browser and never uploaded to a server.</p>
+      <h2>What the Export Does Not Contain</h2>
+      <p>Several things on these pages are not in the export. Here is what this prototype does about each one.</p>
+      <ul class="pv-fields">
+        <li><b>Genres.</b> Not in the export. This prototype uses a hand-written genre list. A real version needs another source. Spotify's API has had a genres field on artists, but it has been narrowing access, so check what is available before relying on it.</li>
+        <li><b>Popularity.</b> Spotify removed artist and track popularity from its Web API for Development Mode apps in February 2026. The popular-versus-alt split here uses invented scores, so a real version needs a different measure.</li>
+        <li><b>Energy and positivity.</b> Spotify's audio features stopped working for new apps in November 2024. The numbers here come from a hand-written table by genre, so a real version has no Spotify source for them.</li>
+        <li><b>Heart rate and activity.</b> Not in Spotify's export. The Apple Watch numbers in the genre breakdown are generated. A real version would need your Apple Health data, described below.</li>
+        <li><b>Artist photos and cover art.</b> Not in the export. This prototype draws its own.</li>
+        <li><b>City.</b> The export has a country code and an IP address. Turning an address into a city needs an IP location database, which Spotify does not provide.</li>
+      </ul>
 
-      <h2>Your IP Address and Places</h2>
-      <p>The export includes the IP address for each play. The Listening Map turns that into an approximate city. A real version should do that lookup on your device, from data shipped with the app, because sending addresses to an outside lookup service would share where you listened.</p>
-
-      <h2>Search History</h2>
-      <p>If you request the account data package too, past exports have included a search queries file. It is optional, and a real version should treat it as sensitive.</p>
+      <h2>Apple Watch Data (Simulated)</h2>
+      <p>A web page cannot read Apple Health directly. A real version would need you to export your Health data from the Health app (your profile picture, then Export All Health Data). That produces a ZIP with a file called <code>export.xml</code>, which holds heart rate and active energy records and workouts. A real version could match those to your plays by timestamp, on your device. Health data is sensitive, so it should never be uploaded. Matching by time shows what was happening while you listened. It does not show that the music caused it, and none of it is medical advice.</p>
 
       <h2>Moods Are Guesses</h2>
-      <p>Moods, forecasts, and playlists are inferred from genre, time of day, and how you played songs. They are not measurements of how you feel, and they are not a diagnosis. Treat them as a prompt for reflection.</p>
+      <p>The music horoscope works the same way. Its ten archetypes are invented for this prototype and scored from the simulated plays. They are loosely inspired by trends described in Wikipedia's article on 2020s music, which is licensed CC BY-SA 4.0, and they are for fun, not a personality test.</p>
+      <p>The mood colors, forecasts, and playlists come from rules written for this prototype: genre estimates, time of day, weekday, device, and skipping. They are not Spotify data, they are not measurements of how you feel, and they are not a diagnosis. Treat them as a prompt for reflection.</p>
+
+      <h2>Why Files Should Stay on Your Device</h2>
+      <p>Your export contains years of listening, with timestamps and an IP address. A real version should read the files in your browser and never upload them to a server. This also avoids Spotify's API limits. Since February 2026, a new app in Development Mode is limited to five authorized users and needs a Premium account for its owner. Spotify's current rules are on its developer site and may change.</p>
+
+      <h2>Your IP Address and Places</h2>
+      <p>A real version would turn each play's IP address into an approximate city. It should do that on your device, using data shipped with the app, because sending addresses to an outside lookup service would share where you listened.</p>
 
       <h2>Links and Fonts</h2>
       <p>Artist links open a Spotify search in a new tab, so Spotify receives that search under its own policies. This page also loads fonts from Google Fonts, so Google receives the usual request details, like your IP address.</p>
 
+      <h2>Not Affiliated With Spotify</h2>
+      <p>This is an independent prototype. It is not affiliated with, endorsed by, or sponsored by Spotify. Spotify is a trademark of Spotify AB.</p>
+
       <h2>Getting Your Export</h2>
-      <p>The steps are on the main page, under Use Your Real Listening History. Spotify's own privacy page controls the export.</p>
+      <p>The steps are on the main page, under Getting Your Spotify Data. Spotify's own privacy page controls the export.</p>
     </section>
   </div>
 
   <section class="export" id="export">
     <div>
-      <h2>Use Your Real Listening History</h2>
-      <p>This page runs on generated data. To see your own days, you need Spotify's data export. It has to be requested on a computer.</p>
+      <h2 data-ico="download">Getting Your Spotify Data</h2>
+      <p>This prototype cannot read your files yet. These are the steps to request the export a real version would use. Spotify may change them.</p>
       <ol class="steps">
         <li><div><b>Open Spotify's Account Privacy page.</b> Sign in if it asks.<br><a class="btn" href="https://www.spotify.com/account/privacy/" target="_blank" rel="noopener noreferrer">Open Spotify privacy settings</a></div></li>
-        <li><div><b>Scroll to "Download your data".</b> You will see a few checkboxes for different packages.</div></li>
-        <li><div><b>Tick "Extended streaming history".</b> This is the package with your full play history, with timestamps, skips, and connection details.</div></li>
-        <li><div><b>Tick "Account data" as well for search history.</b> It is a separate package, and past exports have included a search queries file in it.</div></li>
+        <li><div><b>Find the section for downloading your data.</b> You will see a few checkboxes for different packages.</div></li>
+        <li><div><b>Tick "Extended streaming history".</b> This is the package with your full play history, with timestamps, play length, skips, device type, country, and IP address.</div></li>
         <li><div><b>Select Request, then confirm in the email Spotify sends.</b> Spotify does not start until you click the confirm link.</div></li>
-        <li><div><b>Wait for the second email.</b> Spotify says it can take up to 30 days. It often arrives in a few days.</div></li>
-        <li><div><b>Download the ZIP and unzip it.</b> The play history is a set of JSON files.</div></li>
+        <li><div><b>Wait for the email with your download link.</b> Spotify says it can take up to 30 days.</div></li>
+        <li><div><b>Download the ZIP and unzip it.</b> The play history is a set of JSON files, usually named Streaming_History_Audio followed by numbers.</div></li>
       </ol>
     </div>
   </section>
 
-  <footer class="foot"><span>Listening Timeline, a design demo with made-up data.</span><a href="#privacy" data-view="privacy">Privacy</a></footer>
+</div>
+
+<footer class="sitefoot">
+  <div class="in">
+    <div class="fcols">
+      <div><h3>Pages</h3><a href="#home" data-view="home">Listening</a><a href="#locations" data-view="locations">Locations</a></div>
+      <div><h3>About</h3><a href="#privacy" data-view="privacy">Privacy and data</a></div>
+      <div><h3>Data</h3><a href="#export" data-scroll="export">Export steps</a><a href="https://www.spotify.com/account/privacy/" target="_blank" rel="noopener noreferrer">Spotify privacy settings</a></div>
+    </div>
+    <p class="copy">Listening Timeline is an independent prototype with fictional artists, songs, and albums. Any match with real ones is coincidental. It is not affiliated with or endorsed by Spotify. Spotify is a trademark of Spotify AB.</p>
+  </div>
+</footer>
+
+<div class="tmodal twmodal" id="twinModal" role="dialog" aria-modal="true" aria-labelledby="twinTitle" hidden>
+  <div class="tm-back" data-twclose></div>
+  <div class="tm-box tw-box">
+    <button class="tm-x" data-twclose aria-label="Close twin cities">&times;</button>
+    <div id="twinBody"></div>
+  </div>
+</div>
+
+<div class="tmodal" id="trackModal" role="dialog" aria-modal="true" aria-labelledby="tmTitle" hidden>
+  <div class="tm-back" data-close></div>
+  <div class="tm-box">
+    <button class="tm-x" data-close aria-label="Close song details">&times;</button>
+    <div id="tmBody"></div>
+  </div>
 </div>
 
 <script>
 (function(){
+
+  /* ---------- icons (simple line glyphs) ---------- */
+  var ICO={
+    sun:'<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>',
+    moon:'<path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/>',
+    sunrise:'<path d="M7 18a5 5 0 0 1 10 0M12 4v4M4.9 9.9l2.1 2.1M19.1 9.9L17 12M2 18h2M20 18h2M2 22h20"/>',
+    clock:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+    target:'<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/>',
+    link:'<circle cx="9" cy="12" r="5"/><circle cx="15" cy="12" r="5"/>',
+    alert:'<path d="M12 3l10 18H2z"/><path d="M12 10v5M12 18v.5"/>',
+    calendar:'<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/>',
+    bars:'<path d="M5 20V10M12 20V4M19 20v-7"/>',
+    sparkle:'<path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/><path d="M19 17v4M17 19h4"/>',
+    shapes:'<circle cx="7.5" cy="7.5" r="4.5"/><path d="M17 12l5 5-5 5-5-5z"/>',
+    pulse:'<path d="M3 12h4l2-6 4 12 2-6h6"/>',
+    skip:'<path d="M5 5l9 7-9 7zM19 5v14"/>',
+    download:'<path d="M12 3v12M7 11l5 5 5-5M4 21h16"/>',
+    pin:'<path d="M12 21s7-6.2 7-11a7 7 0 0 0-14 0c0 4.8 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/>',
+    globe:'<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3 3 15 0 18M12 3c-3 3-3 15 0 18"/>',
+    note:'<path d="M9 18V5l11-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="17" cy="16" r="3"/>',
+    crystal:'<circle cx="12" cy="10.5" r="7"/><path d="M6 21h12M8 8a4.5 4.5 0 0 1 3-2"/>',
+    mic:'<rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/>',
+    building:'<path d="M4 21V6l8-3 8 3v15M9 21v-5h6v5M9 10h6"/>',
+    flag:'<path d="M5 21V4M5 4h11l-2 4 2 4H5"/>',
+    trend:'<path d="M3 17l6-6 4 4 8-8M15 7h6v6"/>',
+    leaf:'<path d="M5 19C5 9 11 4 20 4c0 9-5 15-15 15zM5 19l7-7"/>',
+    shuffle:'<path d="M3 7h4l10 10h4M3 17h4l3-3M14 10l3-3h4M18 4l3 3-3 3M18 14l3 3-3 3"/>',
+    headphones:'<path d="M4 15v-3a8 8 0 0 1 16 0v3"/><rect x="3" y="14" width="4" height="7" rx="1.5"/><rect x="17" y="14" width="4" height="7" rx="1.5"/>',
+    repeat:'<path d="M17 2l4 4-4 4M3 11V9a3 3 0 0 1 3-3h15M7 22l-4-4 4-4M21 13v2a3 3 0 0 1-3 3H3"/>',
+    disco:'<circle cx="12" cy="13" r="7"/><path d="M12 2v4M5 13h14M12 6v14M7.5 8.5c3 2 6 2 9 0M7.5 17.5c3-2 6-2 9 0"/>',
+    bolt:'<path d="M13 2L4 14h7l-1 8 9-12h-7z"/>',
+    star:'<path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1-4.4-4.3 6.1-.9z"/>',
+    laptop:'<rect x="4" y="5" width="16" height="11" rx="2"/><path d="M2 20h20"/>',
+    cloud:'<path d="M7 18a4 4 0 0 1-.5-8A6 6 0 0 1 18 9a4.5 4.5 0 0 1 0 9z"/>'
+  };
+  function ico(n){return ICO[n]?'<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+ICO[n]+'</svg>':'';}
   /* ---------- fake catalog ---------- */
   var GENRE = {
     'lo-fi beats':[.5,.22],'ambient':[.45,.12],'neo-classical':[.4,.2],'indie folk':[.4,.3],
@@ -693,7 +1208,7 @@ button.btn{border:0;cursor:pointer;font:inherit;font-weight:600}
       var cur=toMin(start)+r()*2, lastT=null;
       function add(tr,skipped,from){
         var d=skipped?(0.15+r()*0.2):tr.dur*(0.96+r()*0.04);
-        var p={track:tr,startMin:cur,durMin:d,skipped:skipped,device:device,place:place,fromSearch:from||null};
+        var p={track:tr,startMin:cur,durMin:d,skipped:skipped,device:device,place:place,fromSearch:null};
         plays.push(p);cur+=d;lastT=tr;return p;
       }
       for(var i=0;i<count;i++){
@@ -754,7 +1269,11 @@ button.btn{border:0;cursor:pointer;font:inherit;font-weight:600}
   }
 
   var NDAYS=365;
-  var TRIPS=[['2025-11-20',5,AU],['2026-01-03',8,LD],['2026-03-14',3,S],['2026-05-22',4,LX],['2026-07-10',6,LX],['2026-08-15',3,S]];
+  var TRIPS=[['2025-10-18',3,'New York, US'],['2025-11-20',5,AU],['2025-12-12',3,'Chicago, US'],['2026-01-03',8,LD],
+    ['2026-02-06',4,'Los Angeles, US'],['2026-02-20',3,'Mexico City, MX'],['2026-03-14',3,S],['2026-03-28',4,'Paris, FR'],
+    ['2026-04-18',3,'Berlin, DE'],['2026-05-02',5,'Tokyo, JP'],['2026-05-22',4,LX],['2026-06-06',3,'Seoul, KR'],
+    ['2026-06-20',4,'Sydney, AU'],['2026-07-10',6,LX],['2026-07-28',3,'S\u00e3o Paulo, BR'],['2026-08-15',3,S],
+    ['2026-08-28',4,'Cape Town, ZA'],['2026-09-12',3,'Mumbai, IN'],['2026-09-21',4,'Toronto, CA']];
   function tripPlace(date){
     for(var i=0;i<TRIPS.length;i++){
       var a=TRIPS[i][0].split('-'),st=new Date(+a[0],+a[1]-1,+a[2]),en=new Date(+a[0],+a[1]-1,+a[2]+TRIPS[i][1]);
@@ -834,8 +1353,8 @@ button.btn{border:0;cursor:pointer;font:inherit;font-weight:600}
   function cover(t){
     var h=0,s=t.title+t.artist;
     for(var i=0;i<s.length;i++){h=(h*31+s.charCodeAt(i))>>>0;}
-    var a=h%360,b=(a+40+(h>>3)%120)%360,c=(a+180+(h>>5)%60)%360,x=20+(h>>7)%60,y=20+(h>>9)%60;
-    return 'background:radial-gradient(circle at '+x+'% '+y+'%,hsl('+c+' 70% 62%) 0 22%,transparent 23%),linear-gradient('+((h%8)*45)+'deg,hsl('+a+' 62% 48%),hsl('+b+' 66% 30%))';
+    var HU=[336,285,18,226,160,350,265], a=HU[h%7], b=HU[(h>>>3)%7], c=HU[(h>>>5)%7], x=20+(h>>>7)%60, y=20+(h>>>9)%60;
+    return 'background:radial-gradient(circle at '+x+'% '+y+'%,hsl('+c+' 95% 88%) 0 22%,transparent 23%),linear-gradient('+((h%8)*45)+'deg,hsl('+a+' 85% 74%),hsl('+b+' 80% 64%))';
   }
   var SEARCH_SVG='<svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5L21 21"/></svg>';
   function moodColor(m,pct){return 'color-mix(in srgb, var(--'+m+') '+pct+'%, transparent)';}
@@ -927,9 +1446,9 @@ button.btn{border:0;cursor:pointer;font:inherit;font-weight:600}
   }
   function artistPic(name){
     var h=0;for(var i=0;i<name.length;i++){h=(h*31+name.charCodeAt(i))>>>0;}
-    var a=h%360,b=(a+40+(h>>4)%90)%360,v=(h>>9)%3;
+    var HU=[336,285,18,226,160,350,265], a=HU[h%7], b=HU[(h>>>4)%7], v=(h>>>9)%3;
     var head=v===0?'<circle cx="16" cy="12.5" r="5.6"/>':v===1?'<ellipse cx="16" cy="12.5" rx="5" ry="6"/><path d="M10.5 12a5.5 6 0 0 1 11 0c-1.5-3-9.5-3-11 0z"/>':'<circle cx="16" cy="12.5" r="5.2"/><path d="M9.5 14c0-6 3-8 6.5-8s6.5 2 6.5 8c0-4-3-5.5-6.5-5.5S9.5 10 9.5 14z"/>';
-    return '<span class="apic" style="background:linear-gradient(150deg,hsl('+a+' 55% 52%),hsl('+b+' 60% 30%))" aria-hidden="true"><svg viewBox="0 0 32 32" fill="rgba(255,255,255,.62)">'+head+'<path d="M4 32c0-7.5 5.2-11.5 12-11.5S28 24.5 28 32z"/></svg></span>';
+    return '<span class="apic" style="background:linear-gradient(150deg,hsl('+a+' 85% 76%),hsl('+b+' 78% 64%))" aria-hidden="true"><svg viewBox="0 0 32 32" fill="rgba(255,255,255,.78)">'+head+'<path d="M4 32c0-7.5 5.2-11.5 12-11.5S28 24.5 28 32z"/></svg></span>';
   }
   function artistLink(name,mood){
     return '<a class="alink'+(mood?' m':'')+'"'+(mood?' style="--mc:var(--'+mood+')"':'')+' href="https://open.spotify.com/search/'+encodeURIComponent(name)+'" target="_blank" rel="noopener noreferrer" title="Search '+name+' on Spotify">'+artistPic(name)+name+'<svg viewBox="0 0 10 10" aria-hidden="true"><path d="M2 1l7 4-7 4z" fill="currentColor"/></svg></a>';
@@ -1013,7 +1532,7 @@ button.btn{border:0;cursor:pointer;font:inherit;font-weight:600}
 
 
   /* ---------- demographics ---------- */
-  var COUNTRY={US:'United States',PT:'Portugal',GB:'United Kingdom'};
+  var COUNTRY={US:'United States',PT:'Portugal',GB:'United Kingdom',MX:'Mexico',CA:'Canada',FR:'France',DE:'Germany',JP:'Japan',KR:'South Korea',AU:'Australia',BR:'Brazil',ZA:'South Africa',IN:'India'};
   var PLACE_VARS=['--pl0','--pl1','--pl2','--pl3','--pl4','--pl5'];
   function allPlays(){return [].concat.apply([],DAYS.map(function(x){return x.plays;}));}
   function topGenre(plays){var m={};plays.forEach(function(p){p.track.genres.forEach(function(g){m[g]=(m[g]||0)+p.durMin;});});return topKey(m);}
@@ -1028,6 +1547,68 @@ button.btn{border:0;cursor:pointer;font:inherit;font-weight:600}
     plays.forEach(function(p){var k=keyFn(p);var o=m[k]||(m[k]={name:k,mins:0,n:0,plays:[]});o.mins+=p.durMin;o.n++;o.plays.push(p);});
     return Object.keys(m).map(function(k){return m[k];}).sort(function(a,b){return b.mins-a.mins;});
   }
+
+  /* ---------- skips: three-card carousel by month ---------- */
+  function monthKey(d){return d.getFullYear()+'-'+(d.getMonth()+1);}
+  function monthLabel(d){return d.toLocaleDateString('en-US',{month:'long',year:'numeric'});}
+  var skKeys=[], skLabels={}, skMonth=null, skCenter=1, skBuilt=false;
+  var elSkips=document.getElementById('skips'), elSkMonth=document.getElementById('skipMonth');
+  function skipPeriod(key){
+    var days=key==='year'?DAYS:DAYS.filter(function(d){return monthKey(d.date)===key;});
+    return {days:days.length,plays:[].concat.apply([],days.map(function(d){return d.plays;}))};
+  }
+  function buildSkipMonths(){
+    DAYS.forEach(function(d){var k=monthKey(d.date);if(!skLabels[k]){skLabels[k]=monthLabel(d.date);skKeys.push(k);}});
+    skKeys.reverse();
+    skMonth=skKeys.length>1?skKeys[1]:skKeys[0];
+    elSkMonth.innerHTML=skKeys.map(function(k){return '<option value="'+k+'">'+skLabels[k]+'</option>';}).join('')+'<option value="year">Past year</option>';
+    elSkMonth.value=skMonth;skBuilt=true;
+  }
+  function skipRowsOrNote(plays,fn,min){
+    var h=skipRows(plays,fn,min);
+    return h||'<p class="sub">Not enough plays in this period.</p>';
+  }
+  function skApply(){
+    var left=(skCenter+2)%3, right=(skCenter+1)%3;
+    [].slice.call(elSkips.querySelectorAll('.sk-card')).forEach(function(c,i){
+      var role=i===skCenter?'c':(i===left?'l':'r');
+      c.className='sk-card is-'+role;
+      c.style.order=role==='l'?0:(role==='c'?1:2);
+      if(role==='c'){c.removeAttribute('tabindex');c.removeAttribute('role');c.removeAttribute('aria-label');}
+      else{c.setAttribute('tabindex','0');c.setAttribute('role','button');c.setAttribute('aria-label','Show most skipped '+c.dataset.name);}
+    });
+  }
+  function renderSkips(){
+    if(!skBuilt)buildSkipMonths();
+    var per=skipPeriod(skMonth), plays=per.plays;
+    if(!plays.length){elSkips.innerHTML='<p class="sub">No plays in this period.</p>';return;}
+    var min=skMonth==='year'?100:Math.max(5,Math.round(100*per.days/365));
+    var when=skMonth==='year'?'over the past year':'in '+skLabels[skMonth];
+    var skipped=plays.filter(function(p){return p.skipped;}).length;
+    var cards=[
+      ['genres','Genres','shapes','You skipped <b>'+Math.round(skipped/plays.length*100)+'%</b> of all plays '+when,function(p){return p.track.genres;}],
+      ['artists','Artists','mic','Artists with at least <b>'+min+'</b> plays',function(p){return [p.track.artist];}],
+      ['songs','Songs','note','Songs with at least <b>'+min+'</b> plays',function(p){return [p.track.title+' by '+p.track.artist];}]
+    ];
+    elSkips.innerHTML=cards.map(function(c){
+      return '<article class="sk-card" data-name="'+c[0]+'"><h3>'+ico(c[2])+c[1]+'</h3><p class="sub">'+c[3]+'</p>'+skipRowsOrNote(plays,c[4],min)+'</article>';
+    }).join('');
+    skApply();
+  }
+  function skMove(step){skCenter=(skCenter+step+3)%3;skApply();}
+  document.getElementById('skPrev').addEventListener('click',function(){skMove(-1);});
+  document.getElementById('skNext').addEventListener('click',function(){skMove(1);});
+  elSkips.addEventListener('click',function(e){
+    var c=e.target.closest&&e.target.closest('.sk-card');
+    if(!c||c.classList.contains('is-c'))return;
+    skCenter=[].indexOf.call(elSkips.querySelectorAll('.sk-card'),c);skApply();
+  });
+  elSkips.addEventListener('keydown',function(e){
+    if(e.key!=='Enter'&&e.key!==' ')return;
+    var c=e.target.closest&&e.target.closest('.sk-card');
+    if(c&&!c.classList.contains('is-c')){e.preventDefault();skCenter=[].indexOf.call(elSkips.querySelectorAll('.sk-card'),c);skApply();}
+  });
+  elSkMonth.addEventListener('change',function(){skMonth=elSkMonth.value;renderSkips();});
   function skipRows(plays,keyFn,minPlays){
     var m={};
     plays.forEach(function(p){keyFn(p).forEach(function(k){var o=m[k]||(m[k]={k:k,n:0,s:0});o.n++;if(p.skipped)o.s++;});});
@@ -1041,24 +1622,23 @@ button.btn{border:0;cursor:pointer;font:inherit;font-weight:600}
     var plays=allPlays(),total=plays.reduce(function(a,p){return a+p.durMin;},0);
     var cities=bucket(plays,function(p){return p.place;});
     var countries=bucket(plays,function(p){return p.place.split(', ')[1];});
-    document.getElementById('cities').innerHTML='<h3>Cities</h3><p class="sub">Share of listening time</p>'+
-      rankRows(cities,total,function(g){var dm=domMood(g.plays);return g.n+' plays, mostly '+L(dm.mood)+', most played genre '+topGenre(g.plays)+'.';});
-    document.getElementById('countries').innerHTML='<h3>Countries</h3><p class="sub">Share of listening time</p>'+
-      rankRows(countries.map(function(c){c.name=(COUNTRY[c.name]||c.name)+' ('+c.name+')';return c;}),total,function(g){var dm=domMood(g.plays);return g.n+' plays, mostly '+L(dm.mood)+', most played genre '+topGenre(g.plays)+'.';});
+    document.getElementById('cities').innerHTML='<h3>'+ico('building')+'Cities</h3><p class="sub">Share of listening time</p>'+
+      rankRows(cities.slice(0,8),total,function(g){var dm=domMood(g.plays);return g.n+' plays, mostly '+L(dm.mood)+', most played genre '+topGenre(g.plays)+'.';})+(cities.length>8?'<p class="sub">'+(cities.length-8)+' more cities are on the map.</p>':'');
+    document.getElementById('countries').innerHTML='<h3>'+ico('flag')+'Countries</h3><p class="sub">Share of listening time</p>'+
+      rankRows(countries.map(function(c){c.name=(COUNTRY[c.name]||c.name)+' ('+c.name+')';return c;}).slice(0,8),total,function(g){var dm=domMood(g.plays);return g.n+' plays, mostly '+L(dm.mood)+', most played genre '+topGenre(g.plays)+'.';})+(countries.length>8?'<p class="sub">'+(countries.length-8)+' more countries are on the map.</p>':'');
 
     mapNames=cities.map(function(c){return c.name;});
     renderMap();
 
-    var skipped=plays.filter(function(p){return p.skipped;}).length;
-    document.getElementById('skips').innerHTML=
-      '<div class="pc"><h3>Genres</h3><p class="sub">You skipped '+Math.round(skipped/plays.length*100)+'% of all plays</p>'+skipRows(plays,function(p){return p.track.genres;},100)+'</div>'+
-      '<div class="pc"><h3>Artists</h3><p class="sub">At least 100 plays</p>'+skipRows(plays,function(p){return [p.track.artist];},100)+'</div>'+
-      '<div class="pc"><h3>Songs</h3><p class="sub">At least 100 plays</p>'+skipRows(plays,function(p){return [p.track.title+' by '+p.track.artist];},100)+'</div>';
+    renderSkips();
   }
 
 
   /* ---------- interactive map (simplified dotted world, drawn in place) ---------- */
-  var CITY_XY={'Portland, US':[45.52,-122.68],'Seattle, US':[47.61,-122.33],'Austin, US':[30.27,-97.74],'London, GB':[51.51,-0.13],'Lisbon, PT':[38.72,-9.14]};
+  var CITY_XY={'Portland, US':[45.52,-122.68],'Seattle, US':[47.61,-122.33],'Austin, US':[30.27,-97.74],'London, GB':[51.51,-0.13],'Lisbon, PT':[38.72,-9.14],
+    'New York, US':[40.71,-74.01],'Chicago, US':[41.88,-87.63],'Los Angeles, US':[34.05,-118.24],'Mexico City, MX':[19.43,-99.13],
+    'Toronto, CA':[43.65,-79.38],'Paris, FR':[48.86,2.35],'Berlin, DE':[52.52,13.40],'Tokyo, JP':[35.68,139.69],'Seoul, KR':[37.57,126.98],
+    'Sydney, AU':[-33.87,151.21],'S\u00e3o Paulo, BR':[-23.55,-46.63],'Cape Town, ZA':[-33.92,18.42],'Mumbai, IN':[19.08,72.88]};
   var LAND=[
     // North America
     [[-168,66],[-166,69],[-156,71],[-141,70],[-128,70],[-112,68],[-96,72],[-86,70],[-82,67],[-80,62],[-78,60],[-68,60],[-62,58],[-56,52],[-61,47],[-66,45],[-70,42],[-74,40],[-76,37],[-81,31],[-80,26],[-82,26],[-84,30],[-89,30],[-94,29],[-97,26],[-97,22],[-95,19],[-91,18],[-90,21],[-87,21],[-88,16],[-84,15],[-83,11],[-80,9],[-77,8],[-79,7],[-83,8],[-86,11],[-91,14],[-96,16],[-105,20],[-106,23],[-110,27],[-114,31],[-117,32],[-120,34],[-124,40],[-124,46],[-125,49],[-130,54],[-135,58],[-141,60],[-148,60],[-152,58],[-158,56],[-163,55],[-158,58],[-162,60],[-166,62]],
@@ -1114,9 +1694,10 @@ button.btn{border:0;cursor:pointer;font:inherit;font-weight:600}
     }
     return d;
   })();
-  var MAPPRE={world:{cx:360,cy:155,w:720},na:{cx:160,cy:88,w:210},eu:{cx:370,cy:82,w:120}};
+  var MAPPRE={world:{cx:360,cy:155,w:720},na:{cx:160,cy:105,w:210},eu:{cx:370,cy:82,w:120},sa:{cx:270,cy:215,w:200},af:{cx:420,cy:200,w:260},ap:{cx:530,cy:178,w:380}};
   var mapView={cx:360,cy:155,w:720}, mapPtrs={}, mapDrag={moved:false,last:null,pinch:0};
   function applyMap(){
+    var rsel=document.getElementById('mapRegionSel');if(rsel){rsel.value=state.mapRegion||'';}
     var geo=document.getElementById('geo');if(!geo)return;
     var v=mapView;
     v.w=clamp(v.w,90,720);
@@ -1124,13 +1705,22 @@ button.btn{border:0;cursor:pointer;font:inherit;font-weight:600}
     v.cx=clamp(v.cx,v.w/2,720-v.w/2);v.cy=clamp(v.cy,10+h/2,300-h/2);
     geo.setAttribute('viewBox',(v.cx-v.w/2).toFixed(2)+' '+(v.cy-h/2).toFixed(2)+' '+v.w.toFixed(2)+' '+h.toFixed(2));
     geo.classList.toggle('zoomed',k>1.05);
-    var land=geo.querySelector('.land');if(land)land.style.strokeWidth=(1.9*Math.pow(k,0.35)).toFixed(2);
+    var land=geo.querySelector('.land');if(land)land.style.strokeWidth=(1.9*Math.pow(k,-0.15)).toFixed(2);
     var sc=Math.pow(k,-0.55), gap=3*Math.pow(k,-0.5);
     geo.querySelectorAll('.bub').forEach(function(g){var c=g.querySelector('circle');if(c)c.setAttribute('r',(+g.dataset.r0*sc).toFixed(2));});
     geo.querySelectorAll('text').forEach(function(t){
       var r=+t.dataset.r0*sc;
       t.setAttribute('x',(+t.dataset.x+(t.dataset.left==='1'?-(r+gap):(r+gap))).toFixed(1));
       t.style.fontSize=(8*Math.pow(k,-0.75)).toFixed(2)+'px';
+    });
+    // hide city labels that would sit on top of a bigger city's label
+    var lbTexts=[].slice.call(geo.querySelectorAll('text')).sort(function(a,b){return +b.dataset.r0-+a.dataset.r0;}), lbBoxes=[];
+    lbTexts.forEach(function(t){t.style.opacity='';});
+    lbTexts.forEach(function(t){
+      var r=t.getBoundingClientRect();
+      if(!r.width)return;
+      var hit=lbBoxes.some(function(b){return r.left<b.right&&r.right>b.left&&r.top<b.bottom&&r.bottom>b.top;});
+      if(hit){t.style.opacity='0';}else{lbBoxes.push(r);}
     });
     var zi=document.querySelector('[data-mzoom="in"]'),zo=document.querySelector('[data-mzoom="out"]');
     if(zi)zi.disabled=v.w<=90.5;if(zo)zo.disabled=v.w>=719.5;
@@ -1163,21 +1753,110 @@ button.btn{border:0;cursor:pointer;font:inherit;font-weight:600}
     });
     items.slice().sort(function(a,b){return b.r-a.r;}).forEach(function(it){
       var n=it.c.name,left=(n==='Portland, US');
-      bubs+='<g class="bub" tabindex="0" role="button" data-r0="'+it.r.toFixed(1)+'" data-city="'+n+'" aria-label=""'+n+', '+Math.round(it.c.mins/total*100)+' percent of listening time"><circle cx="'+it.x.toFixed(1)+'" cy="'+it.y.toFixed(1)+'" r="'+it.r.toFixed(1)+'" fill="'+placeColor(n)+'"><title>'+n+'</title></circle></g>';
+      bubs+='<g class="bub" tabindex="0" role="button" data-r0="'+it.r.toFixed(1)+'" data-city="'+n+'" aria-label="'+n+', '+Math.round(it.c.mins/total*100)+' percent of listening time"><circle cx="'+it.x.toFixed(1)+'" cy="'+it.y.toFixed(1)+'" r="'+it.r.toFixed(1)+'" fill="'+placeColor(n)+'"><title>'+n+'</title></circle></g>';
       labs+='<text data-x="'+it.x.toFixed(1)+'" data-r0="'+it.r.toFixed(1)+'" data-left="'+(left?1:0)+'" x="'+(it.x+(left?-(it.r+3):(it.r+3))).toFixed(1)+'" y="'+(it.y+3).toFixed(1)+'" text-anchor="'+(left?'end':'start')+'">'+cityShort(n)+'</text>';
     });
+    var RO=function(v,t){return '<option value="'+v+'"'+(state.mapRegion===v?' selected':'')+'>'+t+'</option>';};
     var P1=function(k,v,t){return '<button data-'+k+'="'+v+'" aria-pressed="'+((k==='mscope'?state.mapScope:state.mapRegion)===v)+'">'+t+'</button>';};
     document.getElementById('placeWeek').innerHTML=
-      '<div class="mp-head"><div><h3>Listening Map</h3><p class="sub">Each bubble is a city, sized by listening time. Dashed arcs link your most listened city to the places you traveled. Hover or tab to a bubble for details.</p></div>'+
+      '<div class="mp-head"><div><h3>'+ico('globe')+'Listening Map</h3><p class="sub">Each bubble is a city, sized by listening time. Dashed arcs link your most listened city to the places you traveled. Hover or tab to a bubble for details.</p></div>'+
       '<div class="mp-ctl"><div class="seg" role="group" aria-label="Time range">'+P1('mscope','year','Past year')+P1('mscope','two','Last two weeks')+'</div>'+
-      '<div class="seg" role="group" aria-label="Map region">'+P1('mregion','world','World')+P1('mregion','na','North America')+P1('mregion','eu','Europe')+'</div>'+
+      '<label class="sel"><select id="mapRegionSel" aria-label="Map region"><option value="" disabled'+(state.mapRegion?'':' selected')+'>Custom view</option>'+RO('world','World')+RO('na','North America')+RO('sa','South America')+RO('eu','Europe')+RO('af','Africa')+RO('ap','Asia Pacific')+'</select></label>'+
       '<div class="seg" role="group" aria-label="Zoom"><button class="zb" data-mzoom="in" aria-label="Zoom in">+</button><button class="zb" data-mzoom="out" aria-label="Zoom out">&minus;</button><button data-mzoom="reset">Reset</button></div></div></div>'+
       '<svg id="geo" viewBox="0 10 720 290" role="group" aria-label="Map of the cities you listened in. Drag to pan, and use the zoom buttons to zoom."><path class="land" d="'+LANDPATH+'"/>'+arcs+bubs+labs+'</svg>'+
       '<p class="qnote">Drag the map to pan. Zoom with the + and \u2212 buttons, pinch on a touch screen, or hold Ctrl (or Cmd) and scroll.</p>'+
-      '<div class="quad-detail" id="mapDetail" aria-live="polite"></div>';
+      '<div class="quad-detail" id="mapDetail" aria-live="polite"></div>'+
+      '<div class="twin-panel" id="twinPanel" aria-live="polite"><p class="tw-hint">Select a city on the map to meet its twin city.</p></div>';
     applyMap();
     if(!state.mapCity||!items.some(function(i){return i.c.name===state.mapCity;})){state.mapCity=home?home.c.name:null;}
     if(state.mapCity){selectCity(state.mapCity);}
+  }
+
+  /* ---------- twin cities: short music histories (real-world background, not Spotify data) ---------- */
+  var SP='S\u00e3o Paulo, BR';
+  var TWIN_PAIRS=[
+    ['Portland, US','Seattle, US','Both are Pacific Northwest cities where music grew around small venues and independent labels, away from the big industry centers.'],
+    ['Austin, US','Lisbon, PT','Both are cities of story songs, from Texas songwriters to fado singers, where the lyric and the small room come first.'],
+    ['New York, US','London, GB','Both are global port-of-entry cities where immigrant communities remixed what they found into punk, hip hop and grime.'],
+    ['Chicago, US','Berlin, DE','Chicago house and Detroit techno inspired Berlin\u2019s club scene after 1989, so the two cities share a dance-floor lineage.'],
+    ['Los Angeles, US','Seoul, KR','Both are industry cities where studios and production teams shape pop that reaches far beyond their own borders.'],
+    ['Mexico City, MX',SP,'Latin America\u2019s two giant cities, where rural folk songs, rock and street rap have all flowed into the pop of the moment.'],
+    ['Tokyo, JP','Paris, FR','Both export a polished, stylish pop and electronic sound, from Tokyo\u2019s city pop to Paris\u2019s French touch.'],
+    ['Cape Town, ZA','Sydney, AU','Southern Hemisphere port cities where Indigenous traditions met imported styles, then grew jazz, pub rock and club scenes.'],
+    ['Toronto, CA','Mumbai, IN','Two very mixed cities where many communities share the same airwaves, so film songs, carnival rhythms, rap and indie live side by side.']
+  ];
+  var CITY_LORE={
+    'Portland, US':{roots:'A garage-rock scene took hold in the 1960s, and Portland later grew a do-it-yourself culture of small venues, independent labels, record shops, and folk and singer-songwriter nights.',
+      evolved:'That hand-made habit carried into indie rock, then into home-recorded folk, lo-fi and bedroom pop, which is why quiet, homemade-sounding music still feels at home there.'},
+    'Seattle, US':{roots:'Seattle produced Jimi Hendrix, a long garage and punk underground, and by the late 1980s the grunge sound that the label Sub Pop helped send around the world.',
+      evolved:'After grunge, the city\u2019s taste stretched into indie rock, introspective songwriting, hip hop and electronic music, and small rooms still count as the main stage.'},
+    'Austin, US':{roots:'Blues, country, conjunto and Tejano music all mixed in Texas, and in the 1970s Austin became home to progressive country and a long-running live-music television series.',
+      evolved:'The nickname Live Music Capital of the World and festivals like South by Southwest turned it into a place where songwriters, rock bands and new artists are found live.'},
+    'Lisbon, PT':{roots:'Fado grew up in Lisbon\u2019s old neighborhoods, a sung storytelling tradition about longing and loss built around the Portuguese guitar. UNESCO recognized it as intangible cultural heritage in 2011.',
+      evolved:'Younger singers keep reworking fado, while Afro-Portuguese dance styles like batida and kuduro, shaped by the city\u2019s African-descended communities, share playlists with a busy indie scene.'},
+    'New York, US':{roots:'Tin Pan Alley songwriting, Harlem jazz, Latin dance orchestras and 1970s punk all started in New York, and hip hop was born in the Bronx in the 1970s.',
+      evolved:'The city keeps absorbing new arrivals, so rap, dance pop, indie rock and Latin music still turn up in the same neighborhoods and on the same radio dial.'},
+    'London, GB':{roots:'Music hall, the 1960s British rock boom, punk in the late 1970s, and Caribbean sound systems that brought reggae and dub all shaped London before electronic dance music added jungle and garage.',
+      evolved:'Those scenes kept mixing into grime, drum and bass, indie and pop, and the city still blends sounds from its many immigrant communities.'},
+    'Chicago, US':{roots:'The Great Migration brought blues, gospel and jazz north, and labels like Chess recorded electric blues there. In the early 1980s house music took shape in the city\u2019s clubs.',
+      evolved:'House and footwork stayed local traditions, and later drill and a wave of independent rap and soul acts kept Chicago\u2019s sound moving.'},
+    'Berlin, DE':{roots:'Berlin had Weimar-era cabaret, then a divided city that drew experimental musicians in the 1970s. After the Wall fell in 1989, empty buildings became techno clubs.',
+      evolved:'Techno and house became the city\u2019s signature, and the club scene now sits beside indie, hip hop and experimental electronic music.'},
+    'Los Angeles, US':{roots:'Film studios and session musicians made Los Angeles a recording capital. It also gave the world surf rock, Laurel Canyon folk rock, Sunset Strip metal and West Coast hip hop, alongside deep Mexican American music traditions.',
+      evolved:'Studios there still shape pop, rap and R&B, and the city\u2019s Latino communities feed regional Mexican and urbano sounds into the mainstream.'},
+    'Seoul, KR':{roots:'Korean traditions such as pansori and court music met American pop through radio and military bases in the 1950s and 60s. In the 1990s a new generation of groups blended hip hop and R&B with Korean pop.',
+      evolved:'Entertainment companies built a training and production system that turned that blend into K-pop, now polished, choreographed and released for audiences around the world.'},
+    'Mexico City, MX':{roots:'Mariachi, son and ranchera songs, romantic bolero trios, and rock and roll adapted by local bands in the 1950s and 60s are all part of Mexico City\u2019s sound.',
+      evolved:'Rock en espa\u00f1ol, regional Mexican styles such as corridos tumbados, and reggaeton now mix on the same playlists, often with older ranchera in the background.'},
+    'S\u00e3o Paulo, BR':{roots:'Samba paulista, country-flavored sertanejo from the interior, and the Tropic\u00e1lia movement of the late 1960s all passed through S\u00e3o Paulo, followed by a strong 1980s rock scene and rap groups from the periphery.',
+      evolved:'Today funk paulista, trap, sertanejo and Brazilian pop sit side by side, with periphery rap still driving the city\u2019s storytelling.'},
+    'Tokyo, JP':{roots:'Postwar Japan mixed enka ballads with imported jazz and rock. In the late 1970s and 80s Tokyo gave the world electronic pioneers and the glossy sound later called city pop.',
+      evolved:'City pop has found a second life online, while J-pop, idol groups, rock, vocal synthesizer music and anime songs fill the charts.'},
+    'Paris, FR':{roots:'Chanson and cabaret grew in Montmartre, accordion musette filled dance halls, and the 1930s Hot Club helped make Paris a jazz city. In the late 1990s the French touch brought filtered house to the world.',
+      evolved:'French-language rap, Afro-influenced pop and electronic acts now sit beside chanson, so the city sounds both classic and international.'},
+    'Cape Town, ZA':{roots:'Cape Malay choirs, the carnival troupes known as klopse, and the Cape jazz of pianist Abdullah Ibrahim all come from Cape Town, and local hip hop took off in the late 1980s.',
+      evolved:'Local rhythms now meet South African house and Afro-pop, and the wider country\u2019s amapiano wave has become part of what people hear in Cape Town.'},
+    'Sydney, AU':{roots:'Aboriginal songlines are among the oldest continuing music traditions in the world, and Sydney later added colonial brass bands, 1960s beat groups and a loud pub rock scene.',
+      evolved:'Club culture, indie bands, Australian hip hop and artists who export pop abroad now fill the city\u2019s playlists, while First Nations musicians bring older traditions into new genres.'},
+    'Toronto, CA':{roots:'A 1960s folk scene in Yorkville, Caribbean traditions that arrived with immigration and are celebrated at the summer carnival, and a rock and indie scene all shaped Toronto.',
+      evolved:'The city became a center for R&B, rap, dancehall-flavored pop and indie music, with many communities\u2019 sounds in the mix.'},
+    'Mumbai, IN':{roots:'Hindustani classical music, Parsi theater songs, and Hindi film music recorded in Bombay\u2019s studios, where playback singers sang for the movies, form Mumbai\u2019s core, alongside a jazz and rock club tradition.',
+      evolved:'Film songs still dominate, but independent artists, street rap from the city\u2019s gully scene, and electronic music now reach listeners worldwide through streaming.'}
+  };
+  function twinInfo(name){
+    for(var i=0;i<TWIN_PAIRS.length;i++){
+      if(TWIN_PAIRS[i][0]===name)return {twin:TWIN_PAIRS[i][1],why:TWIN_PAIRS[i][2]};
+      if(TWIN_PAIRS[i][1]===name)return {twin:TWIN_PAIRS[i][0],why:TWIN_PAIRS[i][2]};
+    }
+    return null;
+  }
+  function twinCol(name){
+    var lore=CITY_LORE[name];if(!lore)return '';
+    var it=mapData.items.filter(function(i){return i.c.name===name;})[0], parts=name.split(', ');
+    var listen=it?'<p class="tw-listen"><b>'+Math.round(it.c.mins/mapData.total*100)+'%</b> of your listening time in this range, mostly '+L(domMood(it.c.plays).mood)+'.</p>'
+                 :'<p class="tw-listen">No listening here in this range.</p>';
+    return '<article class="tw-col"><h4>'+ico('pin')+parts[0]+'<small>'+(COUNTRY[parts[1]]||parts[1])+'</small></h4>'+listen+
+      '<h5>'+ico('note')+'Musical roots</h5><p>'+lore.roots+'</p><h5>'+ico('trend')+'How it evolved</h5><p>'+lore.evolved+'</p></article>';
+  }
+  var TW_ARROWS='<svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 7h12l-3-3M17 17H5l3 3"/></svg>';
+  var twLast=null;
+  function showTwin(name,trigger){
+    var modal=document.getElementById('twinModal'), body=document.getElementById('twinBody'), info=twinInfo(name);
+    if(!modal||!info||!CITY_LORE[name])return;
+    state.mapTwin=name;
+    document.querySelectorAll('#geo .bub').forEach(function(n){n.classList.toggle('twin',n.dataset.city===info.twin);});
+    body.innerHTML='<p class="tw-eyebrow" id="twinTitle">Twin cities</p><p class="tw-why">'+info.why+'</p>'+
+      '<div class="tw-grid">'+twinCol(name)+'<div class="tw-mid" aria-hidden="true">'+TW_ARROWS+'</div>'+twinCol(info.twin)+'</div>'+
+      '<p class="tw-note">These are short, simplified summaries of well-known music history. They are not Spotify data, and the pairing of twin cities is this prototype\u2019s own.</p>';
+    twLast=trigger||document.activeElement;
+    modal.hidden=false;
+    var x=modal.querySelector('.tm-x');if(x&&x.focus)x.focus();
+  }
+  function closeTwin(){
+    var modal=document.getElementById('twinModal');
+    if(!modal||modal.hidden)return;
+    modal.hidden=true;
+    if(twLast&&twLast.focus){try{twLast.focus();}catch(err){}}
   }
   function selectCity(name){
     var it=mapData.items.filter(function(i){return i.c.name===name;})[0];
@@ -1237,15 +1916,6 @@ button.btn{border:0;cursor:pointer;font:inherit;font-weight:600}
     svg+='<text class="q-axis" x="'+QX1+'" y="464" text-anchor="end">Higher positivity</text>';
     svg+='<text class="q-axis" transform="translate(16 '+(QY0+96)+') rotate(-90)">Higher energy</text>';
     svg+='<text class="q-axis" transform="translate(16 '+QY1+') rotate(-90)">Lower energy</text>';
-    var KEYS=[['alt',mx-112],['popular',mx+6]];
-    KEYS.forEach(function(k){
-      var side=k[0],kx=k[1],on=state.side===side,si=info&&info[side];
-      var lab=cap(side)+(si&&si.n?' '+si.share+'%':'');
-      svg+='<g class="qleg" data-side="'+side+'" tabindex="0" role="button" aria-pressed="'+on+'" aria-label="'+cap(side)+' genres: '+(si&&si.n?si.share+'% of listening time, average popularity '+Math.round(si.pop):'no plays')+'. Select to show only these.">'+
-        '<rect x="'+kx+'" y="'+(QY0+6)+'" width="106" height="26" rx="13" fill="var(--panel)" stroke="'+(on?'var(--ink)':'var(--line)')+'" stroke-width="'+(on?2:1)+'"/>'+
-        (side==='alt'?'<circle cx="'+(kx+16)+'" cy="'+(QY0+19)+'" r="6" fill="none" stroke="var(--ink)" stroke-width="2"/>':'<polygon points="'+(kx+16)+','+(QY0+12)+' '+(kx+23)+','+(QY0+19)+' '+(kx+16)+','+(QY0+26)+' '+(kx+9)+','+(QY0+19)+'" fill="none" stroke="var(--ink)" stroke-width="2" stroke-linejoin="round"/>')+
-        '<text class="q-lab" x="'+(kx+30)+'" y="'+(QY0+23)+'">'+lab+'</text></g>';
-    });
     items.slice().sort(function(a,b){return b.r-a.r;}).forEach(function(it){
       var c=it.mood?'var(--'+it.mood+')':'var(--muted)';
       var common=' class="gd" tabindex="0" role="button" data-g="'+it.g+'" data-side="'+it.side+'" fill="'+(it.played?'color-mix(in srgb, '+c+' 65%, transparent)':'none')+'" stroke="'+c+'" stroke-width="2" stroke-linejoin="round"'+(it.played?'':' stroke-dasharray="3 3" opacity=".7"')+' aria-label="'+it.g+', '+it.side+(it.played?', '+it.s.n+' plays, '+L(it.mood):', not played in this range')+'"';
@@ -1258,6 +1928,215 @@ button.btn{border:0;cursor:pointer;font:inherit;font-weight:600}
     el.innerHTML=svg;
   }
 
+
+  /* ---------- simulated Apple Watch data (generated, not measured) ---------- */
+  var ACT={
+    workout:{label:'Workout',ph:'workouts',hr:132,kcal:9.0,mv:1},
+    dancing:{label:'Dancing',ph:'dancing',hr:110,kcal:6.0,mv:1},
+    walking:{label:'Walking',ph:'walks',hr:96,kcal:4.2,mv:1},
+    driving:{label:'Driving',ph:'driving',hr:76,kcal:1.2,mv:0},
+    desk:{label:'Desk work',ph:'desk work',hr:70,kcal:1.1,mv:0},
+    resting:{label:'Resting',ph:'resting',hr:62,kcal:0.9,mv:0}
+  };
+  function watchFor(p){
+    var pools=p.track.pools, a;
+    if(pools.indexOf('angry')>=0)a='workout';
+    else if(pools.indexOf('party')>=0)a='dancing';
+    else if(p.device==='Car'||pools.indexOf('drive')>=0)a='driving';
+    else if(pools.indexOf('focus')>=0)a='desk';
+    else if(pools.indexOf('morning')>=0)a='walking';
+    else a='resting';
+    var r=rng((p.track.id*7919+Math.round(p.startMin)*31+Math.round(p.durMin*100))|0), b=ACT[a];
+    return {act:a,hr:b.hr+(p.e-.5)*10+(r()-.5)*10,kcal:b.kcal*p.durMin*(.85+r()*.3)};
+  }
+
+  /* ---------- music horoscope: 2020s archetypes ---------- */
+  var HG={
+    folk:['singer-songwriter','indie folk','sad indie'],
+    bed:['bedroom pop','indie pop','lo-fi beats'],
+    dream:['dream pop','sad indie','ambient'],
+    club:['house','dance pop','synthwave'],
+    rage:['metal','post-punk','hip hop'],
+    pop:['dance pop','funk','afrobeats','indie pop'],
+    zen:['focus instrumental','lo-fi beats','ambient','neo-classical','jazz'],
+    globe:['afrobeats','hip hop','house','funk']
+  };
+  function hr12(h){return (h%12||12)+(h>=12&&h<24?'pm':'am');}
+  function hnum(x){return '<b>'+x+'</b>';}
+  function hpct(x){return '<b>'+Math.round(x*100)+'%</b>';}
+  var ARCH={
+    lockdown:{ico:'leaf',name:'The Lockdown Folklorist',def:'Reaches for folk and singer-songwriter music, the quiet, reflective kind many people leaned on in the early 2020s.',tag:'You still reach for the quiet record.',gen:HG.folk,pair:'dreamer',
+      watch:'Treating every rainy Tuesday like an album release.',
+      era:`The early 2020s sent many listeners toward stripped-back, acoustic and melancholic music made in isolation. Fans even gave the mood a seasonal name, Sad Girl Autumn.`,
+      read:function(f){return `Folk, singer-songwriter and sad indie make up ${hpct(f.G(HG.folk))} of your listening, and ${hpct(f.mood.wistful)} of your plays read wistful. About ${hpct(f.late)} of it lands after 10pm, when the day goes quiet. You listen like someone who writes in the margins.`;}},
+    wanderer:{ico:'shuffle',name:'The Algorithm Wanderer',def:'Roams across genres and skips freely, led by playlists and feeds more than by any one scene.',tag:'Your queue has no genre and you like it that way.',gen:null,pair:'loop',
+      watch:'Starting twelve playlists and finishing none.',
+      era:`Streaming playlists, short video and recommendation feeds pulled listening toward a fragmented, nearly genreless style, where one hour can cross a handful of scenes.`,
+      read:function(f){return `You played ${hnum(f.nGenres+' genres')} and skipped ${hpct(f.skip)} of your plays, which is how people sound when they are sampling more than settling. Your five most played songs take only ${hpct(f.conc)} of your time.`;}},
+    bedroom:{ico:'headphones',name:'The Bedroom Poptimist',def:'Takes pop seriously, especially the homemade, lo-fi kind. A poptimist is someone who values pop.',tag:'Lo-fi texture, pop hooks, no apologies.',gen:HG.bed,pair:'zen',
+      watch:`Calling a song "so underrated" after it has charted.`,
+      era:`Indie pop and bedroom pop stayed culturally dominant through much of the decade, with alternative listeners embracing pop structures and a lo-fi feel.`,
+      read:function(f){return `Bedroom pop, indie pop and lo-fi beats fill ${hpct(f.G(HG.bed))} of your listening, and ${hpct(f.mood.calm)} of your plays read calm. You like a chorus, as long as it arrives a little hazy.`;}},
+    loop:{ico:'repeat',name:'The Heavy-Rotation Romantic',def:'Falls hard for a few songs and replays them constantly.',tag:'When you love a song, you move in.',gen:null,pair:'wanderer',
+      watch:'Wearing out a song and blaming the song.',
+      era:`Streaming rewarded repeat plays, and long-running favorites kept showing up in the decade's most played lists next to the new releases.`,
+      read:function(f){return `Your top five songs take ${hpct(f.conc)} of your listening time, and you once played ${hnum(f.maxRun+' in a row')} of ${f.runTitle}. Loyalty looks good on you.`;}},
+    club:{ico:'disco',name:'The Late-Night Club Kid',def:'Comes alive after dark with house, dance pop and synths.',tag:'Your best decisions happen after 10pm.',gen:HG.club,pair:'pop',
+      watch:'Texting "one more song" and meaning it.',
+      era:`House and dance pop had a big moment as the decade went on, and a rave-flavored pop energy gave summers their own slogans.`,
+      read:function(f){return `House, dance pop and synthwave make up ${hpct(f.G(HG.club))} of your listening, and ${hpct(f.late)} of it plays after 10pm. Upbeat moods fill ${hpct(f.mood.upbeat)} of your mix.`;}},
+    rage:{ico:'bolt',name:'The Rage-Room Regular',def:'Uses loud, intense music the way a rage room works, to let the day out.',tag:'Loud is a love language.',gen:HG.rage,pair:'zen',
+      watch:'Apologizing to the neighbors with a casserole.',
+      era:`Hard rock, metal, nu metal and hardcore all had comebacks, and rage-style rap pushed hip hop toward distorted, high-energy extremes.`,
+      read:function(f){return `Metal, post-punk and hip hop account for ${hpct(f.G(HG.rage))} of your listening, and ${hpct(f.mood.intense)} of your plays read intense. You skip ${hpct(f.skip)} of songs, because you know within seconds when it is not hitting.`;}},
+    pop:{ico:'star',name:'The Main-Character Pop Star',def:'Treats everyday life like a movie scored by big, bright, shareable pop.',tag:'The soundtrack is yours, and so is the movie.',gen:HG.pop,pair:'club',
+      watch:'Treating the grocery run as a music video.',
+      era:`Pop became a shared event again, with summer-defining slogans, record-breaking tours and songs that took over feeds for weeks.`,
+      read:function(f){return `Dance pop, funk, afrobeats and indie pop fill ${hpct(f.G(HG.pop))} of your listening, and ${hpct(f.popular)} of it leans popular. Upbeat plays are ${hpct(f.mood.upbeat)} of your mood mix.`;}},
+    zen:{ico:'laptop',name:'The Study-Hall Zen Master',def:'Finds focus in calm instrumental and lo-fi music, usually while working or studying.',tag:'Focus is a genre now.',gen:HG.zen,pair:'bedroom',
+      watch:'Forty tabs open and one song on repeat.',
+      era:`Lo-fi and instrumental playlists became the background companion for work and study in the streaming era.`,
+      read:function(f){return `Focus instrumental, lo-fi, ambient, neo-classical and jazz take up ${hpct(f.G(HG.zen))} of your listening, and ${hpct(f.mood.focused)} of your plays read focused. About ${hpct(f.laptop)} happens on a laptop.`;}},
+    globe:{ico:'globe',name:'The Passport Playlist Traveler',def:'Listens in many places and to sounds that cross borders.',tag:'Your library has stamps.',gen:HG.globe,pair:'pop',
+      watch:'Asking a stranger on a train what they are listening to.',
+      era:`Music from outside the English-language mainstream, from K-pop to regional Mexican to afrobeats, kept crossing borders with help from streaming.`,
+      read:function(f){return `You listened in ${hnum(f.nPlaces+' cities')} across ${hnum(f.nCountries+' countries')} in this range, and afrobeats, hip hop, house and funk make up ${hpct(f.G(HG.globe))} of your listening.`;}},
+    dreamer:{ico:'cloud',name:'The Dream-Pop Daydreamer',def:'Loves hazy, dreamy guitars and soft ambient sound, often in the evening or after dark.',tag:'You like your guitars blurred.',gen:HG.dream,pair:'lockdown',
+      watch:'Describing a feeling as a color.',
+      era:`Shoegaze and its dreamy descendants had a revival among younger listeners online, sometimes nicknamed Zoomergaze.`,
+      read:function(f){return `Dream pop, sad indie and ambient make up ${hpct(f.G(HG.dream))} of your listening, and ${hpct(f.eve+f.late)} of it plays in the evening or after dark.`;}}
+  };
+  var ARCH_KEYS=Object.keys(ARCH);
+  var horoSelKey=null;
+  function horoFeat(plays){
+    var tot=0,gs={},ms={},late=0,morn=0,eve=0,skipN=0,lap=0,tr={},popM=0,places={},countries={},run=0,maxRun=0,runTitle='',prev=null;
+    plays.forEach(function(p){
+      var d=p.durMin;tot+=d;
+      p.track.genres.forEach(function(g){gs[g]=(gs[g]||0)+d/p.track.genres.length;});
+      ms[p.mood]=(ms[p.mood]||0)+d;
+      var pr=periodOf(p.startMin);if(pr==='late night')late+=d;else if(pr==='morning')morn+=d;else if(pr==='evening')eve+=d;
+      if(p.skipped)skipN++;
+      if(p.device==='Laptop')lap+=d;
+      tr[p.track.id]=(tr[p.track.id]||0)+d;
+      if(p.track.pop>=POP_LINE)popM+=d;
+      places[p.place]=1;countries[p.place.split(', ')[1]]=1;
+      if(prev===p.track.id){run++;}else{run=1;prev=p.track.id;}
+      if(run>maxRun){maxRun=run;runTitle=p.track.title;}
+    });
+    tot=tot||1;
+    var gk=Object.keys(gs),H=0;gk.forEach(function(g){var q=gs[g]/tot;if(q>0)H-=q*Math.log(q);});
+    var top5=Object.keys(tr).map(function(k){return tr[k];}).sort(function(a,b){return b-a;}).slice(0,5).reduce(function(a,b){return a+b;},0);
+    var mood={};MOOD_KEYS.forEach(function(k){mood[k]=(ms[k]||0)/tot;});
+    return {tot:tot,mood:mood,late:late/tot,morn:morn/tot,eve:eve/tot,skip:plays.length?skipN/plays.length:0,laptop:lap/tot,popular:popM/tot,
+      div:gk.length>1?H/Math.log(20):0,nGenres:gk.length,conc:top5/tot,maxRun:maxRun,runTitle:runTitle,nPlaces:Object.keys(places).length,nCountries:Object.keys(countries).length,
+      G:function(list){return list.reduce(function(a,g){return a+(gs[g]||0)/tot;},0);}};
+  }
+  function hn(x,t){return Math.min(1.6,x/t);}
+  function horoScores(f){
+    var sc={};
+    sc.lockdown=hn(f.G(HG.folk),.22)+.6*hn(f.mood.wistful,.17)+.3*hn(f.late,.2);
+    sc.wanderer=.9*Math.max(0,Math.min(1.6,(f.div-.78)/.12))+.6*hn(f.skip,.11)+.5*hn(f.mood.restless,.06);
+    sc.bedroom=hn(f.G(HG.bed),.22)+.4*hn(f.mood.calm,.25)+.2*hn(f.eve,.3);
+    sc.loop=1.2*hn(f.conc,.2)+.3*hn(f.maxRun,3);
+    sc.club=hn(f.G(HG.club),.2)+.5*hn(f.late,.2)+.4*hn(f.mood.upbeat,.22);
+    sc.rage=hn(f.G(HG.rage),.15)+.9*hn(f.mood.intense,.1)+.3*hn(f.skip,.11);
+    sc.pop=hn(f.G(HG.pop),.22)+.6*hn(f.mood.upbeat,.22)+.5*hn(f.popular,.25);
+    sc.zen=hn(f.G(HG.zen),.28)+.6*hn(f.mood.focused,.3)+.4*hn(f.laptop,.3);
+    sc.globe=hn(f.nPlaces,8)+.6*hn(f.G(HG.globe),.18);
+    sc.dreamer=hn(f.G(HG.dream),.23)+.3*hn(f.eve+f.late,.5)+.3*hn(f.mood.wistful,.17);
+    return sc;
+  }
+  function topOf(sc){return ARCH_KEYS.slice().sort(function(a,b){return sc[b]-sc[a];})[0];}
+  function luckyHour(plays,key){
+    var gen=ARCH[key].gen,hrs={};
+    plays.forEach(function(p){
+      if(gen&&!p.track.genres.some(function(g){return gen.indexOf(g)>=0;}))return;
+      var h=Math.floor(p.startMin/60);hrs[h]=(hrs[h]||0)+p.durMin;
+    });
+    var best=topKey(hrs);
+    return best===null?null:hr12(+best);
+  }
+  var elHoro=document.getElementById('horoOut'), elHoroSel=document.getElementById('horoSel');
+  function renderHoro(plays){
+    if(!plays.length){elHoro.innerHTML='<p class="sub">No plays in this range.</p>';elHoroSel.innerHTML='';return;}
+    var f=horoFeat(plays), sc=horoScores(f), sum=ARCH_KEYS.reduce(function(a,k){return a+Math.pow(sc[k],3);},0)||1;
+    var rank=ARCH_KEYS.slice().sort(function(a,b){return sc[b]-sc[a];}), share={};
+    ARCH_KEYS.forEach(function(k){share[k]=Math.pow(sc[k],3)/sum;});
+    var lateP=plays.filter(function(p){return periodOf(p.startMin)==='late night';}), mornP=plays.filter(function(p){return periodOf(p.startMin)==='morning';});
+    var sun=rank[0], moon=lateP.length>=15?topOf(horoScores(horoFeat(lateP))):rank[1], rising=mornP.length>=15?topOf(horoScores(horoFeat(mornP))):rank[2];
+    var key=horoSelKey&&ARCH[horoSelKey]?horoSelKey:sun;
+    elHoroSel.innerHTML=rank.map(function(k){return '<option value="'+k+'"'+(k===key?' selected':'')+'>'+ARCH[k].name+' ('+Math.round(share[k]*100)+'%)</option>';}).join('');
+    var A=ARCH[key], hour=luckyHour(plays,key), pair=ARCH[A.pair];
+    var signs=[['Sun sign','sun','your overall listening',sun],['Moon sign','moon','your listening after 10pm',moon],['Rising sign','sunrise','your mornings',rising]].map(function(x){
+      return '<div class="sign"><small>'+ico(x[1])+x[0]+'</small><b>'+ico(ARCH[x[3]].ico)+ARCH[x[3]].name+'</b><p class="sign-def">'+ARCH[x[3]].def+'</p><span>'+x[2]+'</span></div>';}).join('');
+    var bars=rank.map(function(k){
+      var w=Math.max(3,share[k]/share[rank[0]]*100);
+      return '<li><span><em class="nm">'+ico(ARCH[k].ico)+ARCH[k].name+'</em><small>'+ARCH[k].def+'</small></span><i class="hbar"><u style="width:'+w.toFixed(0)+'%"></u></i><b>'+Math.round(share[k]*100)+'%</b></li>';}).join('');
+    elHoro.innerHTML=
+      '<div class="signs">'+signs+'</div>'+
+      '<div class="horo-main"><div class="horo-read">'+
+        '<p class="horo-eyebrow">'+ico(key===sun?'sun':'sparkle')+(key===sun?'Your sun sign':'Reading')+'</p>'+
+        '<h3>'+ico(A.ico)+A.name+'</h3><p class="horo-tag">'+A.tag+'</p>'+
+        '<p class="horo-def"><b>What the title means.</b> '+A.def+'</p>'+
+        '<p>'+A.read(f)+'</p>'+
+        '<p class="horo-era"><b>'+ico('calendar')+'The 2020s in you.</b> '+A.era+'</p></div>'+
+      '<dl class="horo-meta">'+
+        (hour?'<div><dt>'+ico('clock')+'Lucky listening hour</dt><dd>'+hnum(hour)+'</dd></div>':'')+
+        '<div><dt>'+ico('target')+'Match with your plays</dt><dd>'+hnum(Math.round(share[key]*100)+'%')+'</dd></div>'+
+        '<div><dt>'+ico('link')+'Pairs well with</dt><dd>'+pair.name+'</dd></div>'+
+        '<div><dt>'+ico('alert')+'Watch out for</dt><dd>'+A.watch+'</dd></div>'+
+      '</dl></div>'+
+      '<h4 class="horo-h4">'+ico('bars')+'How all ten archetypes scored</h4><ul class="horo-bars">'+bars+'</ul>';
+  }
+  elHoroSel.addEventListener('change',function(){horoSelKey=elHoroSel.value;renderHoro(scopePlays());});
+  var elBreak=document.getElementById('gBreak');
+  function renderBreak(plays,played){
+    if(!plays.length||!played.length){elBreak.innerHTML='';return;}
+    var G={},M={},tot={mins:0,hrw:0,kcal:0,move:0};
+    plays.forEach(function(p){
+      var w=watchFor(p), d=p.durMin;
+      tot.mins+=d;tot.hrw+=w.hr*d;tot.kcal+=w.kcal;if(ACT[w.act].mv)tot.move+=d;
+      var m=M[p.mood]||(M[p.mood]={mins:0,hrw:0});m.mins+=d;m.hrw+=w.hr*d;
+      p.track.genres.forEach(function(g){
+        var x=G[g]||(G[g]={mins:0,hrw:0,kcal:0,acts:{}});
+        x.mins+=d;x.hrw+=w.hr*d;x.kcal+=w.kcal;x.acts[w.act]=(x.acts[w.act]||0)+d;
+      });
+    });
+    var rows=played.map(function(it){
+      var x=G[it.g];if(!x||!x.mins)return null;
+      return {g:it.g,share:donutInfo[it.g]?donutInfo[it.g].pct:0,col:donutInfo[it.g]?donutInfo[it.g].col:'var(--muted)',mood:it.s.mood,
+        act:ACT[topKey(x.acts)].label,ph:ACT[topKey(x.acts)].ph,hr:x.hrw/x.mins,kph:x.kcal/(x.mins/60)};
+    }).filter(Boolean);
+    var byHr=rows.slice().sort(function(a,b){return b.hr-a.hr;}), hi=byHr[0], lo=byHr[byHr.length-1];
+    var byKcal=rows.slice().sort(function(a,b){return b.kph-a.kph;})[0];
+    var moods=Object.keys(M).filter(function(k){return M[k].mins>=30;}).map(function(k){return {k:k,hr:M[k].hrw/M[k].mins};}).sort(function(a,b){return b.hr-a.hr;});
+    var avgHr=Math.round(tot.hrw/tot.mins), hours=(tot.mins/60), movePct=Math.round(tot.move/tot.mins*100);
+    var ins=[];
+    ins.push('Across <b>'+(hours>=10?Math.round(hours):hours.toFixed(1))+' hours</b> of listening, your average heart rate was <b>'+avgHr+' bpm</b>. You were moving, whether walking, working out, or dancing, for <b>'+movePct+'%</b> of it.');
+    if(hi&&lo&&hi!==lo){
+      ins.push('<b>'+hi.g+'</b> ran highest at <b>'+Math.round(hi.hr)+' bpm</b>, mostly during '+hi.ph+'. <b>'+lo.g+'</b> ran lowest at <b>'+Math.round(lo.hr)+' bpm</b>, mostly during '+lo.ph+'.');
+    }
+    if(byKcal){ins.push('<b>'+byKcal.g+'</b> came with the most active energy, about <b>'+Math.round(byKcal.kph)+' kcal</b> for each hour of listening.');}
+    if(moods.length>1){
+      var mh=moods[0], ml=moods[moods.length-1];
+      ins.push('Your '+L(mh.k)+' plays ran <b>'+Math.round(mh.hr-ml.hr)+' bpm</b> above your '+L(ml.k)+' plays.');
+    }
+    var hrMin=50, hrMax=150;
+    var body=rows.map(function(r){
+      var pct=Math.max(4,Math.min(100,(r.hr-hrMin)/(hrMax-hrMin)*100));
+      return '<tr><td><i class="sw" style="background:'+r.col+'"></i>'+r.g+'</td>'+
+        '<td class="num"><b>'+r.share.toFixed(1)+'%</b></td>'+
+        '<td>'+(r.mood?chip(r.mood,cap(L(r.mood))):'')+'</td>'+
+        '<td>'+r.act+'</td>'+
+        '<td class="num"><b>'+Math.round(r.hr)+' bpm</b><span class="hrbar" style="width:'+pct.toFixed(0)+'px"></span></td>'+
+        '<td class="num"><b>'+Math.round(r.kph)+' kcal</b></td></tr>';
+    }).join('');
+    elBreak.innerHTML=
+      '<h3>'+ico('pulse')+'Genre breakdown with Apple Watch data <span class="sim-tag">Simulated</span></h3>'+
+      '<p class="sub">These heart rate and activity numbers are generated for this prototype. They show what the page could do if Apple Health data were matched to your plays by time. They are not measurements, and they do not show that music changed your heart rate.</p>'+
+      '<ul class="bk-list">'+ins.map(function(t){return '<li>'+t+'</li>';}).join('')+'</ul>'+
+      '<div class="bt-wrap"><table class="bt"><thead><tr><th>Genre</th><th>Share of listening</th><th>Mood it suggests</th><th>Typical activity</th><th>Avg heart rate</th><th>Active energy per hour</th></tr></thead><tbody>'+body+'</tbody></table></div>';
+  }
   function renderGenres(){
     var plays=scopePlays(), stats=genreStats(plays), names=Object.keys(GENRE);
     var items=names.map(function(g){
@@ -1287,7 +2166,7 @@ button.btn{border:0;cursor:pointer;font:inherit;font-weight:600}
     var notes='<h3>What they suggest</h3>'+donutSvg(played);
     if(played.length){
       var sa=sideInfo.alt,sp=sideInfo.popular,bits=[];
-      bits.push(sa.share+'% of your listening time '+rng+' was alt and '+sp.share+'% was popular.');
+      bits.push('<b>'+sa.share+'%</b> of your listening time '+rng+' was alt and <b>'+sp.share+'%</b> was popular.');
       if(sa.dom&&sp.dom){bits.push(sa.dom.mood===sp.dom.mood?'Both read mostly '+L(sa.dom.mood)+'.':'Your alt music read mostly '+L(sa.dom.mood)+', and your popular music read mostly '+L(sp.dom.mood)+'.');}
       bits.push('Your lowest-positivity genre was '+heavy.g+' ('+heavy.side+'), '+heavy.s.tend+'. Your highest-energy one was '+loud.g+' ('+loud.side+'), '+loud.s.tend+'.');
       var totM=played.reduce(function(a,it){return a+it.s.mins;},0);
@@ -1299,6 +2178,8 @@ button.btn{border:0;cursor:pointer;font:inherit;font-weight:600}
       notes+='<div class="dn-detail" id="dnDetail">'+DN_HINT+'</div><p>'+bits.join(' ')+'</p>';
     }else{notes+='<p>No plays in this range.</p>';}
     elGN.innerHTML=notes;
+    renderBreak(plays,played);
+    renderHoro(plays);
     var keep=state.gsel&&gItems[state.gsel]?state.gsel:(played[0]?played[0].g:names[0]);
     selectGenre(keep);
   }
@@ -1309,7 +2190,7 @@ button.btn{border:0;cursor:pointer;font:inherit;font-weight:600}
     var i=donutInfo[g], box=document.getElementById('dnDetail');
     if(!box)return;
     if(!i){box.innerHTML=DN_HINT;}
-    else{box.innerHTML='<b><i class="sw" style="background:'+i.col+'"></i>'+g+'</b><span class="dn-pct">'+i.pct.toFixed(1)+'%</span><p>'+i.n+' plays, about '+Math.round(i.mins)+' minutes, '+i.tend+'.</p>';}
+    else{box.innerHTML='<b><i class="sw" style="background:'+i.col+'"></i>'+g+'</b><span class="dn-pct">'+i.pct.toFixed(1)+'%</span><p><b>'+i.n+'</b> plays, about <b>'+Math.round(i.mins)+'</b> minutes, '+i.tend+'.</p>';}
     var svg=elGN.querySelector?elGN.querySelector('.donut'):null;
     if(svg){svg.classList.toggle('has',!!i);svg.querySelectorAll('path').forEach(function(pth){pth.classList.toggle('on',pth.dataset.dg===g);});}
   }
@@ -1425,7 +2306,6 @@ button.btn{border:0;cursor:pointer;font:inherit;font-weight:600}
       }).join('');
     }
     elCanvas.innerHTML=
-      '<div class="lane search">'+search+'</div>'+
       '<div class="lane plot"><div class="band" style="background:'+bandStyle(d.plays,HW)+'"></div>'+
         '<svg class="curve" width="'+W+'" height="'+H+'" aria-hidden="true"><path d="'+curvePath(d.plays,HW)+'"/></svg>'+dots+'</div>'+
       '<div class="lane axis">'+ticks+'</div>';
@@ -1607,19 +2487,14 @@ button.btn{border:0;cursor:pointer;font:inherit;font-weight:600}
     elOrb.style.setProperty('--orbglow',mc(order[0],55));
     elOrb.setAttribute('aria-label','Crystal ball. A good bet for now is '+L(f.curMood)+' music.');
     var seq=f.per.filter(function(x){return x.dom;}).map(function(x){return x.nm+' '+L(x.dom.mood);}).join(', ');
-    elOracle.innerHTML='<h2>Today\'s Forecast</h2>'+
+    elOracle.innerHTML='<h2>'+ico('crystal')+'Today\'s Forecast</h2>'+
       '<p class="fc-main">It is '+f.cur+' on a '+f.day+', so a good bet is '+L(f.curMood)+' music.</p>'+
       '<button class="btn fc-play" id="fcPl"><svg viewBox="0 0 10 10" aria-hidden="true"><path d="M2 1l7 4-7 4z" fill="currentColor"/></svg>Play Today\'s Curated Playlist</button>'+
       '<p class="fc-seq">Your last '+f.n+' '+f.day+'s usually run: '+seq+'.</p>'+
       '<div class="pchips">'+f.artists.map(function(a){return artistLink(a.name);}).join('')+'</div>'+
       '<p class="fc-note">Likely artists for the day, guessed from your own history. It refreshes whenever you open the page.</p>';
     var fb=document.getElementById('fcPl');
-    if(fb){fb.addEventListener('click',function(){
-      pl.mood='auto';pl.len=40;pl.curated=true;generatePlaylist();
-      pl.msg='40 songs, picked from what you usually play on '+(pl.ctx?pl.ctx.day+' '+pl.ctx.cur+'s':'days like this')+'. This demo can\'t play audio, so select an artist to listen on Spotify.';renderPl();
-      var panel=document.getElementById('todayPl');panel.hidden=false;
-      try{panel.scrollIntoView({behavior:'smooth',block:'start'});}catch(err){}
-    });}
+    if(fb){fb.addEventListener('click',makeToday);}
   }
   function panelDay(d){
     var date=d.date.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'});
@@ -1861,22 +2736,63 @@ button.btn{border:0;cursor:pointer;font:inherit;font-weight:600}
     parts.push(it.fit>=.6?'Fits a '+L(pl.target)+' mood.':'A softer fit for a '+L(pl.target)+' mood, picked for taste.');
     return parts.join(' ');
   }
+  var SKEL_HTML='<div class="skel skel-line" style="width:34%;height:22px;margin-top:6px"></div><div class="skel skel-line" style="width:58%"></div>'+
+    new Array(9).join('<div class="skel skel-trow"></div>');
   function renderPl(){
     var items=pl.items, mins=items.reduce(function(a,x){return a+x.t.dur;},0), newN=items.filter(function(x){return x.isNew;}).length;
     var h=Math.floor(mins/60), m=Math.round(mins%60);
-    var top=items.length?items[0]:null;
     var rows=items.map(function(it,i){
-      var t=it.t, sec=Math.round(t.dur*60);
-      return '<div class="pl-row" style="animation-delay:'+Math.min(i*25,900)+'ms"><span class="pl-n">'+(i+1)+'</span><div class="pl-cov" style="'+cover(t)+'"></div>'+
-        '<div class="pl-main"><b>'+t.title+'</b>'+(it.isNew?'<span class="newtag">New to you</span>':'')+
-        '<div class="pl-alb">Album: '+albumOf(t)+'</div><div class="pl-sub">'+artistLink(t.artist)+chip(it.mood,L(it.mood))+'</div><p class="pl-why">'+reasonFor(it)+'</p></div>'+
-        '<div class="pl-side"><span class="pl-dur">'+dur(sec)+'</span><button data-pswap="'+i+'" aria-label="Swap '+t.title+' for another song">Swap</button><button data-prem="'+i+'" aria-label="Remove '+t.title+'">Remove</button></div></div>';
+      var t=it.t;
+      return '<li><button class="trow" data-track="'+i+'" aria-label="'+t.title+' by '+t.artist+', '+(it.isNew?'new to you':'familiar')+'. Open details">'+
+        '<span class="tn">'+(i+1)+'</span>'+
+        '<span class="tt"><span class="tcov" style="'+cover(t)+'"></span><span class="tmeta"><b>'+t.title+'</b><i>'+t.artist+'</i></span></span>'+
+        '<span class="ta">'+albumOf(t)+'</span>'+
+        '<span class="tg '+(it.isNew?'new':'fam')+'">'+(it.isNew?'New to you':'Familiar')+'</span>'+
+        '<span class="td">'+dur(Math.round(t.dur*60))+'</span></button></li>';
     }).join('');
     document.getElementById('plOut').innerHTML=
-      '<div class="pl-top"><div><h3>'+pl.title+'</h3><p class="sub">'+items.length+' tracks, '+(h?h+'h ':'')+m+'m, '+(items.length?Math.round(newN/items.length*100):0)+'% new to you</p></div>'+
+      '<div class="pl-top"><div><h3>'+ico('note')+pl.title+'</h3><p class="sub">'+items.length+' songs, '+(h?h+'h ':'')+m+'m, '+(items.length?Math.round(newN/items.length*100):0)+'% new to you</p></div>'+
       '<div class="pl-acts"><button id="plRe">Make Another Version</button><button id="plCopy">Copy Track List</button><button id="plHide">Hide</button></div></div>'+
-      '<p class="pl-why-top">'+(pl.ctx?'Built from what you usually play on '+pl.ctx.day+' '+pl.ctx.cur+'s ('+pl.ctx.top.join(', ')+'), matched to a '+L(pl.target)+' mood, minus what you tend to skip.':'Built for a '+L(pl.target)+' mood from the genres and artists you spend the most time on, minus what you tend to skip.')+'</p>'+
-      '<p class="pl-msg" id="plMsg">'+pl.msg+'</p>'+rows;
+      '<p class="pl-why-top">'+(pl.ctx?'Built from what you usually play on '+pl.ctx.day+' '+pl.ctx.cur+'s ('+pl.ctx.top.join(', ')+'), matched to a '+L(pl.target)+' mood, minus what you tend to skip.':'Built for a '+L(pl.target)+' mood from the genres and artists you spend the most time on, minus what you tend to skip.')+' Select a song for details.</p>'+
+      '<p class="pl-msg" id="plMsg">'+pl.msg+'</p>'+
+      '<div class="tl-head"><span>#</span><span>Title</span><span class="ta">Album</span><span>Type</span><span class="td">Time</span></div>'+
+      '<ol class="tracks">'+rows+'</ol>';
+  }
+  function makeToday(){
+    showView('home');
+    var panel=document.getElementById('todayPl'), box=document.getElementById('plOut');
+    pl.mood='auto';pl.len=40;pl.curated=true;
+    box.innerHTML=SKEL_HTML;
+    panel.classList.add('is-open');panel.setAttribute('aria-hidden','false');
+    try{panel.scrollIntoView({behavior:'smooth',block:'start'});}catch(err){}
+    clearTimeout(pl.timer);
+    pl.timer=setTimeout(function(){
+      generatePlaylist();
+      pl.msg='This demo can\'t play audio, so open a song and use the Spotify link.';
+      renderPl();
+    },380);
+  }
+  var tmLast=null;
+  function openTrack(i,trigger){
+    var it=pl.items[i];if(!it)return;
+    var t=it.t, sec=Math.round(t.dur*60), modal=document.getElementById('trackModal');
+    document.getElementById('tmBody').innerHTML=
+      '<div class="tm-grid"><div class="tm-cov" style="'+cover(t)+'">'+(it.isNew?'<span class="badge-new">New to you</span>':'')+'</div>'+
+      '<div class="tm-info"><h3 id="tmTitle">'+t.title+'</h3><p class="tm-alb">Album: '+albumOf(t)+'</p>'+
+      '<div class="tm-artist">'+artistLink(t.artist)+'</div>'+chip(it.mood,cap(L(it.mood)))+
+      '<p class="tm-why">'+reasonFor(it)+'</p>'+
+      '<dl class="facts"><div><dt>Length</dt><dd>'+dur(sec)+'</dd></div><div><dt>Genres</dt><dd>'+t.genres.join(', ')+'</dd></div></dl>'+
+      '<div class="tm-acts"><a class="btn" href="https://open.spotify.com/search/'+encodeURIComponent(t.title+' '+t.artist)+'" target="_blank" rel="noopener noreferrer">Listen on Spotify</a>'+
+      '<button data-pswap="'+i+'">Swap</button><button data-prem="'+i+'">Remove</button></div></div></div>';
+    if(trigger)tmLast=trigger;
+    modal.hidden=false;
+    var x=modal.querySelector('.tm-x');if(x&&x.focus)x.focus();
+  }
+  function closeTrack(){
+    var modal=document.getElementById('trackModal');
+    if(modal.hidden)return;
+    modal.hidden=true;
+    if(tmLast&&tmLast.focus){try{tmLast.focus();}catch(err){}}
   }
   function swapAt(i){
     var cur=pl.items[i];if(!cur)return;
@@ -1884,6 +2800,7 @@ button.btn{border:0;cursor:pointer;font:inherit;font-weight:600}
     var next=pl.cands.filter(function(x){return !used[x.t.id]&&x.isNew===cur.isNew;})[0]||pl.cands.filter(function(x){return !used[x.t.id];})[0];
     if(next){pl.items[i]=next;}
     renderPl();
+    if(!document.getElementById('trackModal').hidden){openTrack(i);}
   }
   function plText(){return pl.title+'\n'+pl.items.map(function(x,i){return (i+1)+'. '+x.t.title+' - '+x.t.artist+' ('+albumOf(x.t)+')';}).join('\n');}
   function copyPl(){
@@ -1910,9 +2827,11 @@ button.btn{border:0;cursor:pointer;font:inherit;font-weight:600}
     if(!pages[v])v='home';
     Object.keys(pages).forEach(function(k){document.getElementById(pages[k]).hidden=k!==v;});
     var ex=document.getElementById('export');if(ex)ex.hidden=v!=='home';
-    document.querySelectorAll('.topnav [data-view]').forEach(function(a){
+    document.querySelectorAll('.mainnav [data-view], .mobilenav [data-view]').forEach(function(a){
       if(a.dataset.view===v){a.setAttribute('aria-current','page');}else{a.removeAttribute('aria-current');}
     });
+    setNav(false);
+    if(v==='locations'){applyMap();}
     try{window.scrollTo(0,0);}catch(err){}
   }
   elTFrom.addEventListener('change',function(){onTRange('from');});
@@ -1978,6 +2897,28 @@ button.btn{border:0;cursor:pointer;font:inherit;font-weight:600}
 
   document.querySelectorAll('[data-view]').forEach(function(b){b.addEventListener('click',function(e){if(e&&e.preventDefault)e.preventDefault();showView(b.dataset.view);});});
 
+  (function(){
+    if(!('IntersectionObserver' in window))return;
+    var sel='.hero, #view-timeline > .card, #detail, .genres .g-head, .genres .g-grid > *, .demo .g-head, .d-grid > .pc, #placeWeek, .s-grid > .pc, .export, .pv > *';
+    var els=[].slice.call(document.querySelectorAll(sel));
+    if(!els.length)return;
+    document.documentElement.classList.add('js');
+    var io=new IntersectionObserver(function(entries){
+      entries.forEach(function(en){
+        if(!en.isIntersecting)return;
+        var t=en.target;
+        t.classList.add('in');
+        io.unobserve(t);
+        setTimeout(function(){t.style.transitionDelay='';},1000);
+      });
+    },{rootMargin:'0px 0px -8% 0px',threshold:0});
+    els.forEach(function(el){
+      el.classList.add('rv');
+      var idx=el.parentNode?[].indexOf.call(el.parentNode.children,el):0;
+      el.style.transitionDelay=((idx%4)*80)+'ms';
+      io.observe(el);
+    });
+  })();
   var elNavbar=document.getElementById('navbar');
   function onScrollNav(){elNavbar.classList.toggle('stuck',(window.scrollY||0)>2);}
   window.addEventListener('scroll',onScrollNav,{passive:true});
@@ -2004,7 +2945,22 @@ button.btn{border:0;cursor:pointer;font:inherit;font-weight:600}
       elMap.querySelectorAll('[data-mregion]').forEach(function(x){x.setAttribute('aria-pressed',String(x.dataset.mregion===state.mapRegion));});
       return;
     }
+    var cb=e.target.closest&&e.target.closest('[data-city]');
+    if(cb){selectCity(cb.dataset.city);showTwin(cb.dataset.city,cb);return;}
     onMapPick(e);
+  });
+  elMap.addEventListener('keydown',function(e){
+    if(e.key!=='Enter'&&e.key!==' ')return;
+    var cb=e.target.closest&&e.target.closest('.bub');
+    if(cb&&cb.dataset.city){e.preventDefault();selectCity(cb.dataset.city);showTwin(cb.dataset.city,cb);}
+  });
+  elMap.addEventListener('change',function(e){
+    var sel=e.target;
+    if(sel&&sel.id==='mapRegionSel'&&MAPPRE[sel.value]){
+      state.mapRegion=sel.value;
+      mapView=Object.assign({},MAPPRE[sel.value]);
+      applyMap();
+    }
   });
   function inGeo(e){return e.target.closest&&e.target.closest('#geo');}
   elMap.addEventListener('wheel',function(e){
@@ -2050,15 +3006,36 @@ button.btn{border:0;cursor:pointer;font:inherit;font-weight:600}
   var elPlOut=document.getElementById('plOut');
   elPlOut.addEventListener('click',function(e){
     var b;
-    if((b=e.target.closest('[data-pswap]'))){swapAt(+b.dataset.pswap);return;}
-    if((b=e.target.closest('[data-prem]'))){pl.items.splice(+b.dataset.prem,1);renderPl();return;}
+    if((b=e.target.closest('[data-track]'))){openTrack(+b.dataset.track,b);return;}
     if(e.target.closest('#plCopy')){copyPl();return;}
-    if(e.target.closest('#plRe')){generatePlaylist();return;}
-    if(e.target.closest('#plHide')){document.getElementById('todayPl').hidden=true;}
+    if(e.target.closest('#plRe')){makeToday();return;}
+    if(e.target.closest('#plHide')){var pn=document.getElementById('todayPl');pn.classList.remove('is-open');pn.setAttribute('aria-hidden','true');}
+  });
+  document.getElementById('trackModal').addEventListener('click',function(e){
+    var b;
+    if(e.target.closest('[data-close]')){closeTrack();return;}
+    if((b=e.target.closest('[data-pswap]'))){swapAt(+b.dataset.pswap);return;}
+    if((b=e.target.closest('[data-prem]'))){pl.items.splice(+b.dataset.prem,1);renderPl();closeTrack();}
+  });
+  document.getElementById('twinModal').addEventListener('click',function(e){if(e.target.closest('[data-twclose]'))closeTwin();});
+  document.addEventListener('keydown',function(e){if(e.key==='Escape'){closeTrack();closeTwin();setNav(false);}});
+  var elNavBtn=document.getElementById('navBtn'), elMobile=document.getElementById('mobileNav');
+  function setNav(open){elMobile.classList.toggle('open',open);elNavBtn.setAttribute('aria-expanded',String(open));}
+  elNavBtn.addEventListener('click',function(e){e.stopPropagation();setNav(!elMobile.classList.contains('open'));});
+  document.addEventListener('click',function(e){if(elMobile.classList.contains('open')&&!(e.target.closest&&e.target.closest('#mobileNav')))setNav(false);});
+  document.querySelectorAll('[data-cta]').forEach(function(b){b.addEventListener('click',function(){setNav(false);makeToday();});});
+  document.querySelectorAll('[data-scroll]').forEach(function(a){
+    a.addEventListener('click',function(e){
+      if(e&&e.preventDefault)e.preventDefault();
+      showView('home');
+      var t=document.getElementById(a.dataset.scroll);
+      setTimeout(function(){try{if(t&&t.scrollIntoView)t.scrollIntoView({behavior:'smooth',block:'start'});}catch(err){}},40);
+    });
   });
   showPeriod();
   renderGenres();
   renderOracle();
+  document.querySelectorAll('[data-ico]').forEach(function(el){el.insertAdjacentHTML('afterbegin',ico(el.dataset.ico));});
   renderDemo();
 })();
 </script>
